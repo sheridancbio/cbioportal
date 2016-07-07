@@ -35,6 +35,7 @@ package org.mskcc.cbio.portal.servlet;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
+import org.cbioportal.util.StringParser;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.util.*;
@@ -59,6 +60,8 @@ public class MutationDataServlet extends HttpServlet
     private static final Logger logger = Logger.getLogger(MutationDataServlet.class);
     @Autowired
     private MutationDataUtils mutationDataUtils;
+    @Autowired
+    private StringParser stringParser;
 
     public MutationDataUtils getMutationDataUtils() {
         return mutationDataUtils;
@@ -84,8 +87,8 @@ public class MutationDataServlet extends HttpServlet
         String genes = request.getParameter("geneList");
         // we need slashes for miRNA input
         genes = genes.replaceAll("\\\\/", "/");
-        ArrayList<String> geneticProfileList = this.parseValues(geneticProfiles);
-        ArrayList<String> targetGeneList = this.parseValues(genes);
+        ArrayList<String> geneticProfileList = stringParser.splitBySpacesOrCommas(geneticProfiles);
+        ArrayList<String> targetGeneList = stringParser.splitBySpacesOrCommas(genes);
         // final array to be sent
         JSONArray data = new JSONArray();
         try {
@@ -127,7 +130,7 @@ public class MutationDataServlet extends HttpServlet
             sampleList = new ArrayList<String>();
             // fetch a sample list for each sample set id
             // (this allows providing more than one sampleSetId)
-            for (String id : this.parseValues(sampleSetId)) {
+            for (String id : stringParser.splitBySpacesOrCommas(sampleSetId)) {
                 SampleList list = daoSampleList.getSampleListByStableId(id);
                 if (list != null) {
                     sampleList.addAll(list.getSampleList());
@@ -139,27 +142,13 @@ public class MutationDataServlet extends HttpServlet
             sampleList = new ArrayList<String>();
             // fetch a sample list for each sample ids key
             // (this allows providing more than one sampleIdsKey)
-            for (String key : this.parseValues(sampleIdsKey)) {
-                sampleList.addAll(this.parseValues(SampleSetUtil.getSampleIds(key)));
+            for (String key : stringParser.splitBySpacesOrCommas(sampleIdsKey)) {
+                sampleList.addAll(stringParser.splitBySpacesOrCommas(SampleSetUtil.getSampleIds(key)));
             }
         } else {
             // plain list of samples provided, just parse the values
-            sampleList = this.parseValues(sampleListStr);
+            sampleList = stringParser.splitBySpacesOrCommas(sampleListStr);
         }
         return sampleList;
-    }
-
-    /**
-     * Parses string values separated by white spaces or commas.
-     *
-     * @param values    string to be parsed
-     * @return          array list of parsed string values
-     */
-    protected ArrayList<String> parseValues(String values) {
-        if (values == null) {
-            return new ArrayList<String>(0);
-        }
-        String[] parts = values.split("[\\s,]+"); // split by white space or commas
-        return new ArrayList<String>(Arrays.asList(parts));
     }
 }

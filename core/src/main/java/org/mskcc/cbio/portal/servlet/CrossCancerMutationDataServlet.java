@@ -35,6 +35,7 @@ package org.mskcc.cbio.portal.servlet;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
+import org.cbioportal.util.StringParser;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.util.*;
@@ -62,6 +63,8 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
     private AccessControl accessControl; // access control to cancer studies
     @Autowired
     private MutationDataUtils mutationDataUtils;
+    @Autowired
+    private StringParser stringParser;
 
     public MutationDataUtils getMutationDataUtils() {
         return mutationDataUtils;
@@ -143,7 +146,7 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
                         defaultGeneticProfileSet = categorizedGeneticProfileSet.getDefaultMutationAndCopyNumberMap();
                 }
                 for (GeneticProfile profile : defaultGeneticProfileSet.values()) {
-                    ArrayList<String> targetGeneList = this.parseValues(geneList);
+                    ArrayList<String> targetGeneList = stringParser.splitBySpacesOrCommas(geneList);
                     if(!profile.getGeneticAlterationType().equals(GeneticAlterationType.MUTATION_EXTENDED)) {
                         continue;
                     }
@@ -160,19 +163,5 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
         } finally {
             writer.close();
         }
-    }
-
-    /**
-     * Parses string values separated by white spaces or commas.
-     *
-     * @param values    string to be parsed
-     * @return          array list of parsed string values
-     */
-    protected ArrayList<String> parseValues(String values) {
-        if (values == null) {
-            return new ArrayList<String>(0);
-        }
-        String[] parts = values.split("[\\s,]+"); // split by white space or commas
-        return new ArrayList<String>(Arrays.asList(parts));
     }
 }
