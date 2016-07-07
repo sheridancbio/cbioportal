@@ -40,7 +40,6 @@ import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -57,9 +56,8 @@ import java.util.*;
  */
 public class MutationDataServlet extends HttpServlet
 {
-	private static final Logger logger = Logger.getLogger(MutationDataServlet.class);
-
-	@Autowired
+    private static final Logger logger = Logger.getLogger(MutationDataServlet.class);
+    @Autowired
     private MutationDataUtils mutationDataUtils;
 
     public MutationDataUtils getMutationDataUtils() {
@@ -70,145 +68,98 @@ public class MutationDataServlet extends HttpServlet
         this.mutationDataUtils = mutationDataUtils;
     }
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
-		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-				config.getServletContext());
-	}
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, config.getServletContext());
+    }
 
-    protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException
-	{
-		this.doPost(request, response);
-	}
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doPost(request, response);
+    }
 
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException
-	{
-		// get request parameters
-		String geneticProfiles = request.getParameter("geneticProfiles");
-		String genes = request.getParameter("geneList");
-		// we need slashes for miRNA input
-		genes = genes.replaceAll("\\\\/", "/");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // get request parameters
+        String geneticProfiles = request.getParameter("geneticProfiles");
+        String genes = request.getParameter("geneList");
+        // we need slashes for miRNA input
+        genes = genes.replaceAll("\\\\/", "/");
+        ArrayList<String> geneticProfileList = this.parseValues(geneticProfiles);
+        ArrayList<String> targetGeneList = this.parseValues(genes);
+        // final array to be sent
+        JSONArray data = new JSONArray();
+        try {
+            // generate list by processing possible valid sample list parameters
+            ArrayList<String> targetSampleList = this.getSampleList(request);
+            for (String profileId : geneticProfileList) {
+                // add mutation data for each genetic profile
+                data.addAll(mutationDataUtils.getMutationData(profileId, targetGeneList, targetSampleList));
+            }
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        try {
+            JSONValue.writeJSONString(data, out);
+        } finally {
+            out.close();
+        }
+    }
 
-		// parse single strings to create list of strings
-		ArrayList<String> geneticProfileList = this.parseValues(geneticProfiles);
-		ArrayList<String> targetGeneList = this.parseValues(genes);
+    /**
+     * Generates a sample list by processing related request parameters,
+     * which are sampleList, sampleSetId and sampleIdsKey. If none of these
+     * parameters are valid, then this method will return an empty list.
+     *
+     * @param request   servlet request containing parameters
+     * @return          a list of samples
+     * @throws DaoException
+     */
+    protected ArrayList<String> getSampleList(HttpServletRequest request) throws DaoException {
+        DaoSampleList daoSampleList = new DaoSampleList();
+        String sampleListStr = request.getParameter("caseList");
+        String sampleSetId = request.getParameter("caseSetId");
+        String sampleIdsKey = request.getParameter("caseIdsKey");
+        ArrayList<String> sampleList;
+        // first check if sampleSetId param provided
+        if (sampleSetId != null && sampleSetId.length() != 0 && !sampleSetId.equals("-1")) {
+            sampleList = new ArrayList<String>();
+            // fetch a sample list for each sample set id
+            // (this allows providing more than one sampleSetId)
+            for (String id : this.parseValues(sampleSetId)) {
+                SampleList list = daoSampleList.getSampleListByStableId(id);
+                if (list != null) {
+                    sampleList.addAll(list.getSampleList());
+                }
+            }
+        }
+        // if there is no sampleSetId, then check for sampleIdsKey param
+        else if(sampleIdsKey != null && sampleIdsKey.length() != 0) {
+            sampleList = new ArrayList<String>();
+            // fetch a sample list for each sample ids key
+            // (this allows providing more than one sampleIdsKey)
+            for (String key : this.parseValues(sampleIdsKey)) {
+                sampleList.addAll(this.parseValues(SampleSetUtil.getSampleIds(key)));
+            }
+        } else {
+            // plain list of samples provided, just parse the values
+            sampleList = this.parseValues(sampleListStr);
+        }
+        return sampleList;
+    }
 
-		// final array to be sent
-		JSONArray data = new JSONArray();
-
-		try
-		{
-			// generate list by processing possible valid sample list parameters
-			ArrayList<String> targetSampleList = this.getSampleList(request);
-
-			for (String profileId : geneticProfileList)
-			{
-				// add mutation data for each genetic profile
-				data.addAll(mutationDataUtils.getMutationData(profileId,
-					targetGeneList,
-					targetSampleList));
-			}
-		}
-		catch (DaoException e)
-		{
-			e.printStackTrace();
-		}
-
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();
-
-		try
-		{
-			JSONValue.writeJSONString(data, out);
-		}
-		finally
-		{
-			out.close();
-		}
-	}
-
-	/**
-	 * Generates a sample list by processing related request parameters,
-	 * which are sampleList, sampleSetId and sampleIdsKey. If none of these
-	 * parameters are valid, then this method will return an empty list.
-	 *
-	 * @param request   servlet request containing parameters
-	 * @return          a list of samples 
-	 * @throws DaoException
-	 */
-	protected ArrayList<String> getSampleList(HttpServletRequest request) throws DaoException
-	{
-		DaoSampleList daoSampleList = new DaoSampleList();
-
-		String sampleListStr = request.getParameter("caseList");
-		String sampleSetId = request.getParameter("caseSetId");
-		String sampleIdsKey = request.getParameter("caseIdsKey");
-
-		ArrayList<String> sampleList;
-
-		// first check if sampleSetId param provided
-		if (sampleSetId != null &&
-		    sampleSetId.length() != 0 &&
-		    !sampleSetId.equals("-1"))
-		{
-			sampleList = new ArrayList<String>();
-
-			// fetch a sample list for each sample set id
-			// (this allows providing more than one sampleSetId)
-			for (String id : this.parseValues(sampleSetId))
-			{
-				SampleList list = daoSampleList.getSampleListByStableId(id);
-
-				if (list != null)
-				{
-					sampleList.addAll(list.getSampleList());
-				}
-			}
-		}
-		// if there is no sampleSetId, then check for sampleIdsKey param
-		else if(sampleIdsKey != null &&
-		        sampleIdsKey.length() != 0)
-		{
-			sampleList = new ArrayList<String>();
-
-			// fetch a sample list for each sample ids key
-			// (this allows providing more than one sampleIdsKey)
-			for (String key : this.parseValues(sampleIdsKey))
-			{
-				sampleList.addAll(this.parseValues(
-					SampleSetUtil.getSampleIds(key)));
-			}
-		}
-		else
-		{
-			// plain list of samples provided, just parse the values
-			sampleList = this.parseValues(sampleListStr);
-		}
-
-		return sampleList;
-	}
-
-	/**
-	 * Parses string values separated by white spaces or commas.
-	 *
-	 * @param values    string to be parsed
-	 * @return          array list of parsed string values
-	 */
-	protected ArrayList<String> parseValues(String values)
-	{
-		if (values == null)
-		{
-			// return an empty list for null values
-			return new ArrayList<String>(0);
-		}
-
-		// split by white space
-		String[] parts = values.split("[\\s,]+");
-
-		return new ArrayList<String>(Arrays.asList(parts));
-	}
-
+    /**
+     * Parses string values separated by white spaces or commas.
+     *
+     * @param values    string to be parsed
+     * @return          array list of parsed string values
+     */
+    protected ArrayList<String> parseValues(String values) {
+        if (values == null) {
+            return new ArrayList<String>(0);
+        }
+        String[] parts = values.split("[\\s,]+"); // split by white space or commas
+        return new ArrayList<String>(Arrays.asList(parts));
+    }
 }
