@@ -66,19 +66,6 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
     @Autowired
     private StringParser stringParser;
 
-    public MutationDataUtils getMutationDataUtils() {
-        return mutationDataUtils;
-    }
-
-    public void setMutationDataUtils(MutationDataUtils mutationDataUtils) {
-        this.mutationDataUtils = mutationDataUtils;
-    }
-
-    /**
-     * Initializes the servlet.
-     *
-     * @throws ServletException Serlvet Init Error.
-     */
     public void init() throws ServletException {
         super.init();
         accessControl = SpringUtil.getAccessControl();
@@ -95,25 +82,20 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        JSONArray data = new JSONArray(); // final array to be sent
-        String geneList = request.getParameter("geneList");
+        ArrayList<String> targetGeneList = stringParser.splitBySpacesOrCommas(request.getParameter("geneList"));
         Integer dataTypePriority;
         try {
             dataTypePriority = Integer.parseInt(request.getParameter(QueryBuilder.DATA_PRIORITY).trim());
         } catch (NumberFormatException e) {
             dataTypePriority = 0;
         }
-        String[] cancerStudyIdList = request.getParameter(QueryBuilder.CANCER_STUDY_LIST).split(",");
-        HashMap<String, Boolean> studyMap = new HashMap<>();
-        for (String id : cancerStudyIdList) {
-            studyMap.put(id, Boolean.TRUE);
-        }
+        ArrayList<String> cancerStudyIdList = stringParser.splitBySpacesOrCommas(request.getParameter(QueryBuilder.CANCER_STUDY_LIST));
+        HashSet<String> studySet = new HashSet<String>(cancerStudyIdList);
+        JSONArray data = new JSONArray();
         try {
             List<CancerStudy> cancerStudiesList = accessControl.getCancerStudies();
             for (CancerStudy cancerStudy : cancerStudiesList) {
-                if (!studyMap.containsKey(cancerStudy.getCancerStudyStableId())) {
+                if (!studySet.contains(cancerStudy.getCancerStudyStableId())) {
                     continue;
                 }
                 String cancerStudyId = cancerStudy.getCancerStudyStableId();
@@ -146,7 +128,6 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
                         defaultGeneticProfileSet = categorizedGeneticProfileSet.getDefaultMutationAndCopyNumberMap();
                 }
                 for (GeneticProfile profile : defaultGeneticProfileSet.values()) {
-                    ArrayList<String> targetGeneList = stringParser.splitBySpacesOrCommas(geneList);
                     if(!profile.getGeneticAlterationType().equals(GeneticAlterationType.MUTATION_EXTENDED)) {
                         continue;
                     }
@@ -155,13 +136,17 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
                     data.addAll(mutationData);
                 }
             }
-            JSONValue.writeJSONString(data, writer);
         } catch (DaoException e) {
             throw new ServletException(e);
         } catch (ProtocolException e) {
             throw new ServletException(e);
+        }
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        try {
+            JSONValue.writeJSONString(data, out);
         } finally {
-            writer.close();
+            out.close();
         }
     }
 }

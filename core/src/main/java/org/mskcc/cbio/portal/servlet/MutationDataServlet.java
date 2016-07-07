@@ -63,14 +63,6 @@ public class MutationDataServlet extends HttpServlet
     @Autowired
     private StringParser stringParser;
 
-    public MutationDataUtils getMutationDataUtils() {
-        return mutationDataUtils;
-    }
-
-    public void setMutationDataUtils(MutationDataUtils mutationDataUtils) {
-        this.mutationDataUtils = mutationDataUtils;
-    }
-
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
@@ -89,7 +81,6 @@ public class MutationDataServlet extends HttpServlet
         genes = genes.replaceAll("\\\\/", "/");
         ArrayList<String> geneticProfileList = stringParser.splitBySpacesOrCommas(geneticProfiles);
         ArrayList<String> targetGeneList = stringParser.splitBySpacesOrCommas(genes);
-        // final array to be sent
         JSONArray data = new JSONArray();
         try {
             // generate list by processing possible valid sample list parameters
