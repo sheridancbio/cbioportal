@@ -152,7 +152,7 @@
     <filters>
         <filter>../src/main/resources/portal.properties</filter>
     </filters>
-    
+
     <!-- prevent some resources from getting into war -->
     <resources>
       <resource>

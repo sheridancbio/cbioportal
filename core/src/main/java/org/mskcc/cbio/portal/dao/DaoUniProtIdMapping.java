@@ -42,6 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
+import org.cbioportal.persistence.legacy.JdbcUtil;
+
 import java.util.HashSet;
 import java.util.Set;
 

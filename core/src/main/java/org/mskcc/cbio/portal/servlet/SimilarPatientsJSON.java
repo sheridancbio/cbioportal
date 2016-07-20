@@ -37,6 +37,8 @@ import java.util.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import org.apache.log4j.Logger;
+import org.cbioportal.PatientViewParameter;
+import org.cbioportal.QueryBuilderParameter;
 import org.json.simple.*;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
@@ -64,8 +66,8 @@ public class SimilarPatientsJSON extends HttpServlet {
 
         String strMutations = request.getParameter(MUTATION);
         String strCna = request.getParameter(CNA);
-        String sample = request.getParameter(PatientView.SAMPLE_ID);
-        String cancerStudyId = request.getParameter(QueryBuilder.CANCER_STUDY_ID);
+        String sample = request.getParameter(PatientViewParameter.SAMPLE_ID);
+        String cancerStudyId = request.getParameter(QueryBuilderParameter.CANCER_STUDY_ID);
         
         try {
             CancerStudy cancerStudy = DaoCancerStudy.getCancerStudyByStableId(cancerStudyId);

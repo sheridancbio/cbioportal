@@ -32,6 +32,7 @@
 
 package org.mskcc.cbio.portal.dao;
 
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.model.PdbUniprotAlignment;
 import org.mskcc.cbio.portal.model.PdbUniprotResidueMapping;
 

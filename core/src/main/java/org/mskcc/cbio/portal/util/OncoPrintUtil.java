@@ -32,7 +32,7 @@
 
 package org.mskcc.cbio.portal.util;
 
-import org.mskcc.cbio.portal.model.SampleList;
+import org.cbioportal.model.SampleList;
 
 import java.util.Formatter;
 import java.util.List;

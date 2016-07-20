@@ -31,7 +31,7 @@
 --%>
 
 <%@ page import="org.mskcc.cbio.portal.servlet.QueryBuilder" %>
-<%@ page import="org.mskcc.cbio.portal.util.GlobalProperties" %>
+<%@ page import="org.cbioportal.GlobalProperties" %>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 

@@ -32,13 +32,20 @@
 
 package org.mskcc.cbio.portal.util;
 
-import org.mskcc.cbio.portal.dao.DaoInfo;
+import org.cbioportal.persistence.legacy.DaoInfo;
 
 public class VersionUtil
 {
     public static void main(String[] args)
     {
-       int versionCheck = DaoInfo.checkVersion() ? 0 : 1;
-       System.exit(versionCheck);
+        int exitStatus = 0;
+        if (!dbVersionMatches()) {
+            exitStatus = 1;
+        }
+        System.exit(exitStatus);
+    }
+
+    public static boolean dbVersionMatches() {
+        return GlobalProperties.getDbVersion().equals(DaoInfo.getVersion());
     }
 }

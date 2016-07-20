@@ -30,30 +30,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.scripts;
+package org.cbioportal;
 
-import org.mskcc.cbio.portal.dao.*;
-import org.cbioportal.DatabaseProperties;
+public final class IGVLinkingJSONParameter {
+    public static final String CMD = "cmd";
+    public static final String CANCER_STUDY_ID = "cancer_study_id";
+    public static final String CASE_ID = "case_id";
+    public static final String LOCUS = "locus"; // IGV locus string, e.g. chr1:000-200
+    public static final String GENE_LIST = "gene_list";
 
-/**
- * Command Line Tool to Output Basic Database Stats, including Host Name, DB Name, and User Name / Password.
- * 
- */
-public class StatDatabase {
-
-    public static void main(String[] args) throws DaoException {
-        statDb();
-    }
-
-    public static void statDb() {
-        DatabaseProperties dbProperties = DatabaseProperties.getInstance();
-        String host = dbProperties.getDbHost();
-        String userName = dbProperties.getDbUser();
-        String password = dbProperties.getDbPassword();
-        String database = dbProperties.getDbName();
-        System.out.println ("Host:  " + host);
-        System.out.println ("User Name:  " + userName);
-        System.out.println ("Password:  " + password);
-        System.out.println ("Database:  " + database);
-    }
+    private IGVLinkingJSONParameter() {}
 }

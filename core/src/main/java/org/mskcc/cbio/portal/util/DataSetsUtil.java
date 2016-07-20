@@ -33,13 +33,12 @@
 package org.mskcc.cbio.portal.util;
 
 // imports
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.util.AccessControl;
 import org.mskcc.cbio.portal.web_api.ProtocolException;
 
 import java.util.List;
-import java.util.HashSet;
 import java.util.ArrayList;
 
 /**

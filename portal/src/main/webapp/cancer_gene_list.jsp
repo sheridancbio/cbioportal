@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page import="org.mskcc.cbio.portal.servlet.QueryBuilder" %>
-<%@ page import="org.mskcc.cbio.portal.util.GlobalProperties" %>
+<%@ page import="org.cbioportal.GlobalProperties" %>
 <%
   String siteTitle = GlobalProperties.getTitle();
 %>

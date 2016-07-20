@@ -37,7 +37,7 @@ import org.mskcc.cbio.portal.model.User;
 import org.mskcc.cbio.portal.model.UserAuthorities;
 import org.mskcc.cbio.portal.dao.PortalUserDAO;
 import org.mskcc.cbio.portal.authentication.PortalUserDetails;
-import org.mskcc.cbio.portal.util.GlobalProperties;
+import org.cbioportal.GlobalProperties;
 
 import org.springframework.security.saml.*;
 import org.springframework.security.saml.userdetails.*;

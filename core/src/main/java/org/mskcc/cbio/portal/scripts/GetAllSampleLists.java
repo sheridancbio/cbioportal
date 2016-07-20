@@ -33,7 +33,7 @@
 package org.mskcc.cbio.portal.scripts;
 
 import org.mskcc.cbio.portal.dao.DaoSampleList;
-import org.mskcc.cbio.portal.model.SampleList;
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.util.ProgressMonitor;
 
 import java.util.ArrayList;

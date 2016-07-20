@@ -32,6 +32,7 @@
 
 package org.mskcc.cbio.portal.util;
 
+import org.cbioportal.GlobalProperties;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.web_api.ConnectionManager;
@@ -41,7 +42,6 @@ import org.apache.commons.io.*;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.io.File;
 import java.net.*;

@@ -32,28 +32,25 @@
 
 package org.mskcc.cbio.portal.util;
 
-import org.springframework.http.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.util.LinkedMultiValueMap;
-
-import org.apache.commons.cli.*;
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Generated;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Generated;
 import javax.servlet.http.HttpServletRequest;
-
-import org.mskcc.cbio.portal.servlet.PatientView;
+import org.apache.commons.cli.*;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.cbioportal.GlobalProperties;
+import org.cbioportal.PatientViewParameter;
 import org.mskcc.cbio.portal.model.CancerStudy;
+import org.mskcc.cbio.portal.servlet.PatientView;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -77,7 +74,7 @@ public class CheckDarwinAccessMain {
         public static String checkAccess(HttpServletRequest request) {
             CancerStudy cancerStudy = (CancerStudy)request.getAttribute(PatientView.CANCER_STUDY);
             String userName = GlobalProperties.getAuthenticatedUserName().split("@")[0];
-            String patientId = (String)request.getAttribute(PatientView.PATIENT_ID);
+            String patientId = (String)request.getAttribute(PatientViewParameter.PATIENT_ID);
 
             return getResponse(cancerStudy.getCancerStudyStableId(), userName, patientId);
         }

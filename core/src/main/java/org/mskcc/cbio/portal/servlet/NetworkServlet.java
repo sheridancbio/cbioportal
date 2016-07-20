@@ -32,24 +32,25 @@
 
 package org.mskcc.cbio.portal.servlet;
 
-import org.cbioportal.persistence.MutationRepository;
-import org.mskcc.cbio.portal.dao.*;
-import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.model.converter.MutationModelConverter;
-import org.mskcc.cbio.portal.network.*;
-import org.mskcc.cbio.portal.util.*;
-import org.mskcc.cbio.portal.web_api.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-
 import java.io.*;
 import java.util.*;
 import java.util.zip.GZIPOutputStream;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
+import org.apache.commons.lang.StringUtils;
+import org.cbioportal.GlobalProperties;
+import org.cbioportal.QueryBuilderParameter;
+import org.cbioportal.persistence.MutationRepository;
+import org.cbioportal.model.SampleList;
+import org.mskcc.cbio.portal.dao.*;
+import org.mskcc.cbio.portal.model.*;
+import org.mskcc.cbio.portal.model.converter.MutationModelConverter;
+import org.mskcc.cbio.portal.network.*;
+import org.mskcc.cbio.portal.util.*;
+import org.mskcc.cbio.portal.web_api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 /**
  * Retrieving
@@ -127,14 +128,14 @@ public class NetworkServlet extends HttpServlet {
             boolean logXDebug = xd!=null && xd.equals("1");
 
             //  Get User Defined Gene List
-            String geneListStr = req.getParameter(QueryBuilder.GENE_LIST);
+            String geneListStr = req.getParameter(QueryBuilderParameter.GENE_LIST);
             Set<String> queryGenes = new HashSet<String>(Arrays.asList(geneListStr.toUpperCase().split("[, ]+")));
             int nMiRNA = filterNodes(queryGenes);
             if (nMiRNA>0) {
                 messages.append("MicroRNAs were excluded from the network query. ");
             }
 
-            //String geneticProfileIdSetStr = xssUtil.getCleanInput (req, QueryBuilder.GENETIC_PROFILE_IDS);
+            //String geneticProfileIdSetStr = xssUtil.getCleanInput (req, QueryBuilderParameter.GENETIC_PROFILE_IDS);
 
             String netSrc = req.getParameter("netsrc");
             String strNetSize = req.getParameter("netsize");
@@ -169,7 +170,7 @@ public class NetworkServlet extends HttpServlet {
 
             // get cancer study id
             // if cancer study id is null, return the current network
-            String cancerStudyId = req.getParameter(QueryBuilder.CANCER_STUDY_ID);
+            String cancerStudyId = req.getParameter(QueryBuilderParameter.CANCER_STUDY_ID);
             CancerStudy cancerStudy = DaoCancerStudy.getCancerStudyByStableId(cancerStudyId);
 
             if (network.countNodes()!=0 && cancerStudyId!=null) {
@@ -186,7 +187,7 @@ public class NetworkServlet extends HttpServlet {
                 Set<GeneticProfile> geneticProfileSet = getGeneticProfileSet(req, cancerStudyId);
 
                 // getzScoreThreshold
-                double zScoreThreshold = Double.parseDouble(req.getParameter(QueryBuilder.Z_SCORE_THRESHOLD));
+                double zScoreThreshold = Double.parseDouble(req.getParameter(QueryBuilderParameter.Z_SCORE_THRESHOLD));
 
                 xdebug.startTimer();
 
@@ -486,11 +487,11 @@ public class NetworkServlet extends HttpServlet {
 
     private Set<String> getSampleIds(HttpServletRequest req, String cancerStudyId)
             throws ServletException, DaoException {
-    	String sampleIdsKey = req.getParameter(QueryBuilder.CASE_IDS_KEY);
+    	String sampleIdsKey = req.getParameter(QueryBuilderParameter.CASE_IDS_KEY);
     	String strSampleIds = SampleSetUtil.getSampleIds(sampleIdsKey);
 
         if (strSampleIds==null || strSampleIds.length()==0) {
-            String sampleSetId = req.getParameter(QueryBuilder.CASE_SET_ID);
+            String sampleSetId = req.getParameter(QueryBuilderParameter.CASE_SET_ID);
                 //  Get Patient Sets for Selected Cancer Type
                 ArrayList<SampleList> sampleSets = GetSampleLists.getSampleLists(cancerStudyId);
                 for (SampleList ss : sampleSets) {
@@ -512,7 +513,7 @@ public class NetworkServlet extends HttpServlet {
             throws ServletException, DaoException {
         Set<GeneticProfile> geneticProfileSet = new HashSet<GeneticProfile>();
         ArrayList<GeneticProfile> profileList = GetGeneticProfiles.getGeneticProfiles(cancerStudyId);
-        for (String geneticProfileIdsStr : req.getParameterValues(QueryBuilder.GENETIC_PROFILE_IDS)) {
+        for (String geneticProfileIdsStr : req.getParameterValues(QueryBuilderParameter.GENETIC_PROFILE_IDS)) {
             for (String profileId : geneticProfileIdsStr.split(" ")) {
                 GeneticProfile profile = GeneticProfileUtil.getProfile(profileId, profileList);
                 if( null != profile ){
@@ -784,21 +785,21 @@ public class NetworkServlet extends HttpServlet {
 
     private String getNetworkServletUrl(HttpServletRequest req, boolean complete,
             boolean download, boolean sif, String strQueryAlteration) {
-        String geneListStr = req.getParameter(QueryBuilder.GENE_LIST);
-        String geneticProfileIdsStr = req.getParameter(QueryBuilder.GENETIC_PROFILE_IDS);
-        String cancerStudyId = req.getParameter(QueryBuilder.CANCER_STUDY_ID);
-        String caseSetId = req.getParameter(QueryBuilder.CASE_SET_ID);
-        String zscoreThreshold = req.getParameter(QueryBuilder.Z_SCORE_THRESHOLD);
+        String geneListStr = req.getParameter(QueryBuilderParameter.GENE_LIST);
+        String geneticProfileIdsStr = req.getParameter(QueryBuilderParameter.GENETIC_PROFILE_IDS);
+        String cancerStudyId = req.getParameter(QueryBuilderParameter.CANCER_STUDY_ID);
+        String caseSetId = req.getParameter(QueryBuilderParameter.CASE_SET_ID);
+        String zscoreThreshold = req.getParameter(QueryBuilderParameter.Z_SCORE_THRESHOLD);
         String netSrc = req.getParameter("netsrc");
         String netSize = req.getParameter("netsize");
         String nLinker = req.getParameter("linkers");
         String strDiffusion = req.getParameter("diffusion");
 
-        String ret = "network.do?"+QueryBuilder.GENE_LIST+"="+geneListStr
-                +"&"+QueryBuilder.GENETIC_PROFILE_IDS+"="+geneticProfileIdsStr
-                +"&"+QueryBuilder.CANCER_STUDY_ID+"="+cancerStudyId
-                +"&"+QueryBuilder.CASE_SET_ID+"="+caseSetId
-                +"&"+QueryBuilder.Z_SCORE_THRESHOLD+"="+zscoreThreshold
+        String ret = "network.do?"+QueryBuilderParameter.GENE_LIST+"="+geneListStr
+                +"&"+QueryBuilderParameter.GENETIC_PROFILE_IDS+"="+geneticProfileIdsStr
+                +"&"+QueryBuilderParameter.CANCER_STUDY_ID+"="+cancerStudyId
+                +"&"+QueryBuilderParameter.CASE_SET_ID+"="+caseSetId
+                +"&"+QueryBuilderParameter.Z_SCORE_THRESHOLD+"="+zscoreThreshold
                 +"&netsrc="+netSrc
                 +"&msgoff=t";
 

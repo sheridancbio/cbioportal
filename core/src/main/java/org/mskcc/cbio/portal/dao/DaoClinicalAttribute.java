@@ -32,9 +32,9 @@
 
 package org.mskcc.cbio.portal.dao;
 
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.model.*;
 
-import com.google.inject.internal.Join;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.*;

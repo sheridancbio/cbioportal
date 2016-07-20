@@ -40,6 +40,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cbioportal.GlobalProperties;
 import org.mskcc.cbio.portal.model.CancerStudy;
 import org.mskcc.cbio.portal.dao.DaoException;
 import org.springframework.security.access.PermissionEvaluator;

@@ -32,6 +32,7 @@
 
 package org.mskcc.cbio.portal.servlet;
 
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.util.*;

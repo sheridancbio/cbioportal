@@ -33,7 +33,6 @@
 package org.mskcc.cbio.portal.dao;
 
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -41,6 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.model.Drug;
 
 /**

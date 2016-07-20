@@ -37,6 +37,8 @@ import java.util.*;
 
 import javax.servlet.ServletException;
 
+import org.cbioportal.model.SampleList;
+import org.cbioportal.model.SampleListCategory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

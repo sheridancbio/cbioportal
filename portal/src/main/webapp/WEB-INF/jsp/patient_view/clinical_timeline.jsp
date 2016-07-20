@@ -31,7 +31,7 @@
 --%>
 
 
-<%@ page import="org.mskcc.cbio.portal.util.GlobalProperties" %>
+<%@ page import="org.cbioportal.GlobalProperties" %>
 
   <script src="js/src/patient-view/clinical-timeline.min.js?<%=GlobalProperties.getAppVersion()%>"></script>
 

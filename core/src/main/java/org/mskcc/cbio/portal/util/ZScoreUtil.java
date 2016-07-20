@@ -32,12 +32,12 @@
 
 package org.mskcc.cbio.portal.util;
 
-import org.mskcc.cbio.portal.servlet.QueryBuilder;
-import org.mskcc.cbio.portal.model.GeneticProfile;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashSet;
+import javax.servlet.http.HttpServletRequest;
+import org.mskcc.cbio.portal.model.GeneticProfile;
+import org.mskcc.cbio.portal.servlet.QueryBuilder;
+import org.cbioportal.QueryBuilderParameter;
 
 // TODO: perhaps delete this class
 public class ZScoreUtil {
@@ -54,7 +54,7 @@ public class ZScoreUtil {
         if (GeneticProfileUtil.outlierExpressionSelected(geneticProfileIdSet, profileList)) {
             zScoreThreshold = OUTLIER_THRESHOLD_DEFAULT;
         } else {
-            String zScoreThesholdStr = request.getParameter(QueryBuilder.Z_SCORE_THRESHOLD);
+            String zScoreThesholdStr = request.getParameter(QueryBuilderParameter.Z_SCORE_THRESHOLD);
             if (zScoreThesholdStr != null) {
                 try {
                     zScoreThreshold = Double.parseDouble(zScoreThesholdStr);
@@ -72,7 +72,7 @@ public class ZScoreUtil {
     }
     
     public static double getRPPAScore(HttpServletRequest request) {
-        String rppaScoreStr = request.getParameter(QueryBuilder.RPPA_SCORE_THRESHOLD);
+        String rppaScoreStr = request.getParameter(QueryBuilderParameter.RPPA_SCORE_THRESHOLD);
         if (rppaScoreStr == null) {
             return RPPA_SCORE_THRESHOLD_DEFAULT;
         } else {

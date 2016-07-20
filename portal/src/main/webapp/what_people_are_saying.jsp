@@ -36,7 +36,7 @@
 %>
 
 <%@ page import="org.mskcc.cbio.portal.servlet.QueryBuilder" %>
-<%@ page import="org.mskcc.cbio.portal.util.GlobalProperties" %>
+<%@ page import="org.cbioportal.GlobalProperties" %>
 
 
 <% request.setAttribute(QueryBuilder.HTML_TITLE, siteTitle+"::What People Are Saying"); %>

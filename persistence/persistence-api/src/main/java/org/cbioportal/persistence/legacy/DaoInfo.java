@@ -30,9 +30,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.dao;
-
-import org.mskcc.cbio.portal.util.GlobalProperties;
+package org.cbioportal.persistence.legacy;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -43,6 +41,9 @@ public class DaoInfo {
     private static String version;
     
     public static synchronized void setVersion() {
+        if (version != null) {
+            return; // only set once
+        }
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -63,16 +64,7 @@ public class DaoInfo {
     }
     
     public static String getVersion() {
-        return version;
-    }
-
-    public static boolean checkVersion() {
         setVersion();
-        if (GlobalProperties.getDbVersion().equals(getVersion())) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return version;
     }
 }

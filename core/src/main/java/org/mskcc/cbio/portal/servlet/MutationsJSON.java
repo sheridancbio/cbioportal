@@ -36,9 +36,11 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 import javax.servlet.ServletConfig;
-import javax.servlet.http.*;
 import javax.servlet.ServletException;
+import javax.servlet.http.*;
 import org.apache.log4j.Logger;
+import org.cbioportal.PatientViewParameter;
+import org.cbioportal.QueryBuilderParameter;
 import org.cbioportal.persistence.MutationRepository;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.mskcc.cbio.portal.dao.DaoCancerStudy;
@@ -238,7 +240,7 @@ public class MutationsJSON extends HttpServlet {
     private void processGetMutationsRequest(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
-        String[] samples = request.getParameter(PatientView.SAMPLE_ID).split(" +");
+        String[] samples = request.getParameter(PatientViewParameter.SAMPLE_ID).split(" +");
         String mutationProfileId = request.getParameter(PatientView.MUTATION_PROFILE);
         String mrnaProfileId = request.getParameter(PatientView.MRNA_PROFILE);
         String cnaProfileId = request.getParameter(PatientView.CNA_PROFILE);
@@ -366,7 +368,7 @@ public class MutationsJSON extends HttpServlet {
             HttpServletResponse response)
             throws ServletException, IOException {
         String mutationProfileId = request.getParameter(PatientView.MUTATION_PROFILE);
-        String strSampleIds = request.getParameter(QueryBuilder.CASE_IDS);
+        String strSampleIds = request.getParameter(QueryBuilderParameter.CASE_IDS);
         List<Integer> sampleIds = null;
 
         GeneticProfile mutationProfile;
@@ -420,14 +422,14 @@ public class MutationsJSON extends HttpServlet {
             boolean cancerDrug)
             throws DaoException {
         DaoDrugInteraction daoDrugInteraction = DaoDrugInteraction.getInstance();
-        List<Integer> intEventIds = new ArrayList<>();
+        List<Integer> intEventIds = new ArrayList<Integer>();
         for (String eventId : eventIds.split(",")) {
             intEventIds.add(Integer.parseInt(eventId));
         }
 
         List<Integer> result = mutationRepository.getGenesOfMutations(intEventIds);
 
-        Set<Long> genes = new HashSet<>();
+        Set<Long> genes = new HashSet<Long>();
         for (Integer eventId : result) {
             genes.add(eventId.longValue());
         }

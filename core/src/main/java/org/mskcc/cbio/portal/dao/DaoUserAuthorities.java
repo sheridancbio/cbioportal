@@ -33,6 +33,7 @@
 package org.mskcc.cbio.portal.dao;
 
 // imports
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.model.User;
 import org.mskcc.cbio.portal.model.UserAuthorities;
 

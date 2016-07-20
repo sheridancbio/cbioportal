@@ -30,9 +30,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.dao;
-
-import org.mskcc.cbio.portal.util.*;
+package org.cbioportal.persistence.legacy;
 
 import org.apache.commons.logging.*;
 
@@ -40,6 +38,7 @@ import java.sql.*;
 import java.util.*;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.cbioportal.DatabaseProperties;
 
 /**
  * Connection Utility for JDBC.
@@ -231,17 +230,17 @@ public class JdbcUtil {
     }
     
     // is it good to put the two methods below here?
-    static Integer readIntegerFromResultSet(ResultSet rs, String column) throws SQLException {
+    public static Integer readIntegerFromResultSet(ResultSet rs, String column) throws SQLException {
         int i = rs.getInt(column);
         return rs.wasNull() ? null : i;
     }
     
-    static Long readLongFromResultSet(ResultSet rs, String column) throws SQLException {
+    public static Long readLongFromResultSet(ResultSet rs, String column) throws SQLException {
         long l = rs.getInt(column);
         return rs.wasNull() ? null : l;
     }
     
-    static Double readDoubleFromResultSet(ResultSet rs, String column) throws SQLException {
+    public static Double readDoubleFromResultSet(ResultSet rs, String column) throws SQLException {
         double d = rs.getDouble(column);
         return rs.wasNull() ? null : d;
     }

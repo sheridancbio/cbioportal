@@ -38,7 +38,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <%@ page import="org.mskcc.cbio.portal.util.DynamicState" %>
 <%@ page import="org.mskcc.cbio.portal.servlet.QueryBuilder" %>
-<%@ page import="org.mskcc.cbio.portal.util.GlobalProperties" %>
+<%@ page import="org.cbioportal.GlobalProperties" %>
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core' %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <jsp:include page="WEB-INF/jsp/global/css_include.jsp" flush="true" />

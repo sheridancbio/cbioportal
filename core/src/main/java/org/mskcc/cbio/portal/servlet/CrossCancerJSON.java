@@ -32,19 +32,20 @@
 
 package org.mskcc.cbio.portal.servlet;
 
+import java.io.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.cbioportal.service.AnnotatedSampleSets;
+import org.cbioportal.model.SampleList;
+import org.cbioportal.QueryBuilderParameter;
+import org.json.simple.JSONValue;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.oncoPrintSpecLanguage.*;
-import org.mskcc.cbio.portal.web_api.*;
 import org.mskcc.cbio.portal.util.*;
-
-import org.apache.log4j.Logger;
-import org.json.simple.JSONValue;
-import org.apache.commons.lang.StringUtils;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.*;
-import java.io.*;
+import org.mskcc.cbio.portal.web_api.*;
 import java.util.*;
 
 public class CrossCancerJSON extends HttpServlet {
@@ -88,18 +89,18 @@ public class CrossCancerJSON extends HttpServlet {
             List resultsList = new LinkedList();
 
             // Get the gene list
-            String geneList = request.getParameter(QueryBuilder.GENE_LIST);
+            String geneList = request.getParameter(QueryBuilderParameter.GENE_LIST);
             if (request instanceof XssRequestWrapper) {
-            	geneList = ((XssRequestWrapper)request).getRawParameter(QueryBuilder.GENE_LIST);
+            	geneList = ((XssRequestWrapper)request).getRawParameter(QueryBuilderParameter.GENE_LIST);
             }
-	    String cancerStudyIdListString = request.getParameter(QueryBuilder.CANCER_STUDY_LIST);
+	    String cancerStudyIdListString = request.getParameter(QueryBuilderParameter.CANCER_STUDY_LIST);
 	    String[] cancerStudyIdList = cancerStudyIdListString.split(",");
 
             // Get the priority
             Integer dataTypePriority;
             try {
                 dataTypePriority
-                        = Integer.parseInt(request.getParameter(QueryBuilder.DATA_PRIORITY).trim());
+                        = Integer.parseInt(request.getParameter(QueryBuilderParameter.DATA_PRIORITY).trim());
             } catch (NumberFormatException e) {
                 dataTypePriority = 0;
             }

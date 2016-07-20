@@ -32,8 +32,8 @@
 
 package org.mskcc.cbio.portal.dao;
 
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.model.ExtendedMutation.*;
 import org.mskcc.cbio.portal.util.MutationKeywordUtils;
 
 import org.apache.commons.lang.StringUtils;

@@ -31,9 +31,8 @@ import org.mskcc.cbio.portal.dao.DaoSample;
 import org.mskcc.cbio.portal.dao.DaoSampleList;
 import org.mskcc.cbio.portal.model.CancerStudy;
 import org.mskcc.cbio.portal.model.Sample;
-import org.mskcc.cbio.portal.model.SampleList;
-import org.mskcc.cbio.portal.model.SampleListCategory;
-import org.mskcc.cbio.portal.util.ConsoleUtil;
+import org.cbioportal.model.SampleList;
+import org.cbioportal.model.SampleListCategory;
 import org.mskcc.cbio.portal.util.ProgressMonitor;
 import org.mskcc.cbio.portal.util.SpringUtil;
 

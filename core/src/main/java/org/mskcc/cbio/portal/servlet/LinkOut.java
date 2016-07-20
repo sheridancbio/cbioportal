@@ -32,20 +32,20 @@
 
 package org.mskcc.cbio.portal.servlet;
 
-import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.web_api.*;
-import org.mskcc.cbio.portal.util.XDebug;
-import org.mskcc.cbio.portal.dao.DaoException;
-
-import org.apache.commons.collections15.iterators.IteratorEnumeration;
-
 import java.io.*;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import org.apache.commons.collections15.iterators.IteratorEnumeration;
+import org.cbioportal.QueryBuilderParameter;
+import org.cbioportal.service.AnnotatedSampleSets;
+import org.cbioportal.model.SampleList;
+import org.mskcc.cbio.portal.dao.DaoException;
+import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.util.AccessControl;
 import org.mskcc.cbio.portal.util.SpringUtil;
-
+import org.mskcc.cbio.portal.util.XDebug;
+import org.mskcc.cbio.portal.web_api.*;
 /**
  * Central Servlet for Stable LinkOuts.
  */
@@ -113,13 +113,13 @@ public class LinkOut extends HttpServlet {
 
     private String createCrossCancerForwardingUrl(String hostURL, String geneList) {
         String ret = hostURL + "/cross_cancer.do?";
-        ret += QueryBuilder.GENE_LIST+"="+geneList;
+        ret += QueryBuilderParameter.GENE_LIST+"="+geneList;
         ret += "&";
-        ret += QueryBuilder.ACTION_NAME+"="+QueryBuilder.ACTION_SUBMIT;
+        ret += QueryBuilderParameter.ACTION_NAME+"="+QueryBuilder.ACTION_SUBMIT;
         ret += "&";
-        ret += QueryBuilder.CANCER_STUDY_LIST+"=";
+        ret += QueryBuilderParameter.CANCER_STUDY_LIST+"=";
         ret += "&";
-        ret += QueryBuilder.CANCER_STUDY_ID+"=all";
+        ret += QueryBuilderParameter.CANCER_STUDY_ID+"=all";
         ret += "#";
         AccessControl accessControl = SpringUtil.getAccessControl();
         StringBuilder cancerStudyListBuilder = new StringBuilder();
@@ -136,9 +136,9 @@ public class LinkOut extends HttpServlet {
     }
 
     private void createCrossCancerForwardingRequest(ForwardingRequest forwardingRequest, String geneList) {
-        forwardingRequest.setParameterValue(QueryBuilder.GENE_LIST , geneList);
-        forwardingRequest.setParameterValue(QueryBuilder.ACTION_NAME, QueryBuilder.ACTION_SUBMIT);
-        if (forwardingRequest.getParameter(QueryBuilder.CANCER_STUDY_LIST) == null) {
+        forwardingRequest.setParameterValue(QueryBuilderParameter.GENE_LIST , geneList);
+        forwardingRequest.setParameterValue(QueryBuilderParameter.ACTION_NAME, QueryBuilder.ACTION_SUBMIT);
+        if (forwardingRequest.getParameter(QueryBuilderParameter.CANCER_STUDY_LIST) == null) {
             AccessControl accessControl = SpringUtil.getAccessControl();
             StringBuilder cancerStudyListBuilder = new StringBuilder();
             try {
@@ -146,8 +146,8 @@ public class LinkOut extends HttpServlet {
                     cancerStudyListBuilder.append(",");
                     cancerStudyListBuilder.append(cs.getCancerStudyStableId());
                 }
-                forwardingRequest.setParameterValue(QueryBuilder.CANCER_STUDY_LIST, cancerStudyListBuilder.substring(1));
-                forwardingRequest.setParameterValue(QueryBuilder.CANCER_STUDY_ID, "all");
+                forwardingRequest.setParameterValue(QueryBuilderParameter.CANCER_STUDY_LIST, cancerStudyListBuilder.substring(1));
+                forwardingRequest.setParameterValue(QueryBuilderParameter.CANCER_STUDY_ID, "all");
             } catch (Exception e) {
             }
 
@@ -175,45 +175,45 @@ public class LinkOut extends HttpServlet {
     private String createStudySpecificForwardingUrl(String cancerStudyId, String geneList,
                                                     HashMap<String, GeneticProfile> defaultGeneticProfileSet, SampleList defaultSampleList, String output) {
         String ret = "index.do?";
-        ret += QueryBuilder.GENE_LIST+"="+geneList;
+        ret += QueryBuilderParameter.GENE_LIST+"="+geneList;
         ret += "&";
-        ret += QueryBuilder.ACTION_NAME+"="+QueryBuilder.ACTION_SUBMIT;
+        ret += QueryBuilderParameter.ACTION_NAME+"="+QueryBuilder.ACTION_SUBMIT;
         ret += "&";
-        ret += QueryBuilder.CANCER_STUDY_ID+"="+cancerStudyId;
+        ret += QueryBuilderParameter.CANCER_STUDY_ID+"="+cancerStudyId;
         ret += "&";
-        ret += QueryBuilder.CASE_SET_ID+"="+defaultSampleList.getStableId();
+        ret += QueryBuilderParameter.CASE_SET_ID+"="+defaultSampleList.getStableId();
         ret += "&";
         String geneticProfiles = "";
         for (String geneticProfileId: defaultGeneticProfileSet.keySet()) {
-            ret += QueryBuilder.GENETIC_PROFILE_IDS+"_PROFILE_"+defaultGeneticProfileSet.get(geneticProfileId).getGeneticAlterationType().toString();
+            ret += QueryBuilderParameter.GENETIC_PROFILE_IDS+"_PROFILE_"+defaultGeneticProfileSet.get(geneticProfileId).getGeneticAlterationType().toString();
             ret += "="+geneticProfileId;
             ret += "&";
         }
-        ret += QueryBuilder.TAB_INDEX+"="+QueryBuilder.TAB_VISUALIZE;
+        ret += QueryBuilderParameter.TAB_INDEX+"="+QueryBuilder.TAB_VISUALIZE;
         if (output.toLowerCase().equals(LinkOutRequest.REPORT_ONCOPRINT_HTML)) {
             ret += "&";
-            ret += QueryBuilder.OUTPUT+"=html";
+            ret += QueryBuilderParameter.OUTPUT+"=html";
         }
         return ret;
     }
 
     private void createStudySpecificForwardingRequest(ForwardingRequest forwardingRequest, String cancerStudyId, String geneList,
                                                       HashMap<String, GeneticProfile> defaultGeneticProfileSet, SampleList defaultSampleList, String output) {
-        forwardingRequest.setParameterValue(QueryBuilder.GENE_LIST , geneList);
-        forwardingRequest.setParameterValue(QueryBuilder.CANCER_STUDY_ID, cancerStudyId);
-        forwardingRequest.setParameterValue(QueryBuilder.CASE_SET_ID, defaultSampleList.getStableId());
+        forwardingRequest.setParameterValue(QueryBuilderParameter.GENE_LIST , geneList);
+        forwardingRequest.setParameterValue(QueryBuilderParameter.CANCER_STUDY_ID, cancerStudyId);
+        forwardingRequest.setParameterValue(QueryBuilderParameter.CASE_SET_ID, defaultSampleList.getStableId());
 
         List<String> geneticProfileList = new ArrayList<String>();
         for (String geneticProfileId:  defaultGeneticProfileSet.keySet()) {
             geneticProfileList.add(geneticProfileId);
         }
-        forwardingRequest.setParameterValues(QueryBuilder.GENETIC_PROFILE_IDS,
+        forwardingRequest.setParameterValues(QueryBuilderParameter.GENETIC_PROFILE_IDS,
             geneticProfileList.toArray(new String[geneticProfileList.size()]));
 
-        forwardingRequest.setParameterValue(QueryBuilder.ACTION_NAME, QueryBuilder.ACTION_SUBMIT);
-        forwardingRequest.setParameterValue(QueryBuilder.TAB_INDEX, QueryBuilder.TAB_VISUALIZE);
+        forwardingRequest.setParameterValue(QueryBuilderParameter.ACTION_NAME, QueryBuilder.ACTION_SUBMIT);
+        forwardingRequest.setParameterValue(QueryBuilderParameter.TAB_INDEX, QueryBuilder.TAB_VISUALIZE);
         if (output.toLowerCase().equals(LinkOutRequest.REPORT_ONCOPRINT_HTML)) {
-            forwardingRequest.setParameterValue(QueryBuilder.OUTPUT, "html");
+            forwardingRequest.setParameterValue(QueryBuilderParameter.OUTPUT, "html");
         }
     }
 

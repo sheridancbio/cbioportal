@@ -36,10 +36,12 @@ import java.io.IOException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import org.apache.log4j.Logger;
+import org.cbioportal.QueryBuilderParameter;
+import org.cbioportal.CancerStudyViewParameter;
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.util.*;
-import org.owasp.validator.html.PolicyException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -48,7 +50,6 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class CancerStudyView extends HttpServlet {
     private static Logger logger = Logger.getLogger(CancerStudyView.class);
-    public static final String ID = "id";
     public static final String ERROR = "error";
     public static final String CANCER_STUDY = "cancer_study";
     public static final String MUTATION_PROFILE = "mutation_profile";
@@ -103,9 +104,9 @@ public class CancerStudyView extends HttpServlet {
     }
     
     private boolean validate(HttpServletRequest request) throws DaoException {
-        String cancerStudyID = request.getParameter(ID);
+        String cancerStudyID = request.getParameter(CancerStudyViewParameter.ID);
         if (cancerStudyID==null) {
-            cancerStudyID = request.getParameter(QueryBuilder.CANCER_STUDY_ID);
+            cancerStudyID = request.getParameter(QueryBuilderParameter.CANCER_STUDY_ID);
         }
         
         CancerStudy cancerStudy = DaoCancerStudy
@@ -136,10 +137,10 @@ public class CancerStudyView extends HttpServlet {
             }
         }
         
-        String sampleListId = (String)request.getAttribute(QueryBuilder.CASE_SET_ID);
+        String sampleListId = (String)request.getAttribute(QueryBuilderParameter.CASE_SET_ID);
         if (sampleListId==null) {
             sampleListId = cancerStudy.getCancerStudyStableId()+"_all";
-            request.setAttribute(QueryBuilder.CASE_SET_ID, sampleListId);
+            request.setAttribute(QueryBuilderParameter.CASE_SET_ID, sampleListId);
         }
         
         SampleList sampleList = daoSampleList.getSampleListByStableId(sampleListId);
@@ -149,7 +150,7 @@ public class CancerStudyView extends HttpServlet {
             return false;
         }
         
-        request.setAttribute(QueryBuilder.CASE_IDS, sampleList.getSampleList());
+        request.setAttribute(QueryBuilderParameter.CASE_IDS, sampleList.getSampleList());
         
         request.setAttribute(CANCER_STUDY, cancerStudy);
         request.setAttribute(QueryBuilder.HTML_TITLE, cancerStudy.getName());

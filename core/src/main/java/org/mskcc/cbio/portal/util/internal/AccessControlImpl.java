@@ -33,6 +33,7 @@
 package org.mskcc.cbio.portal.util.internal;
 
 // imports
+import org.cbioportal.GlobalProperties;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.util.*;
 import org.mskcc.cbio.portal.model.CancerStudy;

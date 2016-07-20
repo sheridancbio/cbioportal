@@ -34,6 +34,8 @@ package org.mskcc.cbio.portal.dao;
 
 import java.util.ArrayList;
 
+import org.cbioportal.model.SampleList;
+import org.cbioportal.model.SampleListCategory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

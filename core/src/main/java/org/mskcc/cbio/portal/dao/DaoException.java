@@ -32,7 +32,8 @@
 
 package org.mskcc.cbio.portal.dao;
 
-import org.mskcc.cbio.portal.util.GlobalProperties;
+import org.cbioportal.persistence.legacy.DaoInfo;
+import org.cbioportal.GlobalProperties;
 
 /**
  * Exception Occurred while reading/writing data to database.

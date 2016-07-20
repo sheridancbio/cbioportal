@@ -32,8 +32,13 @@
 
 package org.mskcc.cbio.portal.util;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import org.apache.log4j.Logger;
+import org.cbioportal.GlobalProperties;
 import org.cbioportal.persistence.MutationRepository;
+import org.cbioportal.util.WebServerUriBuilder;
 import org.json.simple.JSONArray;
 import org.mskcc.cbio.maf.TabDelimitedFileUtil;
 import org.mskcc.cbio.portal.dao.*;
@@ -42,10 +47,6 @@ import org.mskcc.cbio.portal.model.converter.MutationModelConverter;
 import org.mskcc.cbio.portal.web_api.GetMutationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.util.*;
 
 @Component
@@ -226,7 +227,7 @@ public class MutationDataUtils {
         String typeOfCancer = DaoTypeOfCancer.getTypeOfCancerById(cancerStudy.getTypeOfCancerId()).getName();
         String cancerStudyStableId = cancerStudy.getCancerStudyStableId();
         Sample sample = DaoSample.getSampleById(mutation.getSampleId());
-        String linkToPatientView = GlobalProperties.getLinkToPatientView(sample.getStableId(), cancerStudyStableId);
+        String linkToPatientView = WebServerUriBuilder.getLinkToPatientView(sample.getStableId(), cancerStudyStableId);
         List<String> mcgLinks;
         Boolean isHotspot;
         if (mutation.getMutationType().equalsIgnoreCase("Fusion")) {
@@ -249,7 +250,7 @@ public class MutationDataUtils {
         mutationData.put(CANCER_TYPE, typeOfCancer);
         mutationData.put(CANCER_STUDY, cancerStudy.getName());
         mutationData.put(CANCER_STUDY_SHORT, cancerStudy.getShortName());
-        mutationData.put(CANCER_STUDY_LINK, GlobalProperties.getLinkToCancerStudyView(cancerStudyStableId));
+        mutationData.put(CANCER_STUDY_LINK, WebServerUriBuilder.getLinkToCancerStudyView(cancerStudyStableId));
 	    mutationData.put(TUMOR_TYPE, this.getTumorType(mutation, clinicalDataMap));
         mutationData.put(PROTEIN_CHANGE, mutation.getProteinChange());
 	    mutationData.put(AMINO_ACID_CHANGE, mutation.getAminoAcidChange());
@@ -643,7 +644,7 @@ public class MutationDataUtils {
                     String.valueOf(mutation.getEndPosition()));
             if (IGVLinking.validBAMViewingArgs(cancerStudyStableId, sample.getStableId(), locus)) {
                 try {
-                    link = GlobalProperties.getLinkToIGVForBAM(cancerStudyStableId,
+                    link = WebServerUriBuilder.getLinkToIGVForBAM(cancerStudyStableId,
                             sample.getStableId(),
                             URLEncoder.encode(locus, "US-ASCII"));
                 }

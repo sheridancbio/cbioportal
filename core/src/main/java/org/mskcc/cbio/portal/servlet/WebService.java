@@ -32,6 +32,7 @@
 
 package org.mskcc.cbio.portal.servlet;
 
+import org.cbioportal.DatabaseProperties;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.util.*;
 import org.mskcc.cbio.portal.web_api.*;

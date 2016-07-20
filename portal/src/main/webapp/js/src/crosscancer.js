@@ -1449,7 +1449,7 @@
 
 
                             // end of mutation details
-                            window.crossCancerMutationProxy = proxy;
+                            window.crossCancerMutationProxy = proxy; //TODO: this is not referenced elsewhere: delete?
                         });
                     },
 		    type: 'POST',

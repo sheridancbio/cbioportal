@@ -35,6 +35,8 @@ package org.mskcc.cbio.portal.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.web_api.GetClinicalData;

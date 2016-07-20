@@ -30,30 +30,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.scripts;
+package org.cbioportal;
 
-import org.mskcc.cbio.portal.dao.*;
-import org.cbioportal.DatabaseProperties;
+public final class QueryBuilderParameter {
+    public static final String ACTION_NAME = "Action";
+    public static final String CANCER_STUDY_ID = "cancer_study_id";
+    public static final String CANCER_STUDY_LIST = "cancer_study_list";
+    public static final String CASE_IDS = "case_ids";
+    public static final String CASE_IDS_KEY = "case_ids_key";
+    public static final String CASE_SET_ID = "case_set_id";
+    public static final String DATA_PRIORITY = "data_priority";
+    public static final String GENETIC_PROFILE_IDS = "genetic_profile_ids";
+    public static final String GENE_LIST = "gene_list";
+    public static final String MRNA_PROFILES_SELECTED = "MRNA_PROFILES_SELECTED";
+    public static final String OUTPUT = "output";
+    public static final String PATIENT_CASE_SELECT = "patient_case_select";
+    public static final String RPPA_SCORE_THRESHOLD = "RPPA_SCORE_THRESHOLD";
+    public static final String TAB_INDEX = "tab_index";
+    public static final String Z_SCORE_THRESHOLD = "Z_SCORE_THRESHOLD";
 
-/**
- * Command Line Tool to Output Basic Database Stats, including Host Name, DB Name, and User Name / Password.
- * 
- */
-public class StatDatabase {
-
-    public static void main(String[] args) throws DaoException {
-        statDb();
-    }
-
-    public static void statDb() {
-        DatabaseProperties dbProperties = DatabaseProperties.getInstance();
-        String host = dbProperties.getDbHost();
-        String userName = dbProperties.getDbUser();
-        String password = dbProperties.getDbPassword();
-        String database = dbProperties.getDbName();
-        System.out.println ("Host:  " + host);
-        System.out.println ("User Name:  " + userName);
-        System.out.println ("Password:  " + password);
-        System.out.println ("Database:  " + database);
-    }
+    private QueryBuilderParameter() {}
 }

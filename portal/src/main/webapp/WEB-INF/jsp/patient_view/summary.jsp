@@ -35,7 +35,7 @@
 <%@ page import="org.mskcc.cbio.portal.model.Sample" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
-<%@ page import="org.mskcc.cbio.portal.util.GlobalProperties" %>
+<%@ page import="org.cbioportal.GlobalProperties" %>
 
 <style type="text/css" title="currentStyle">
 #genomic-overview-tip {

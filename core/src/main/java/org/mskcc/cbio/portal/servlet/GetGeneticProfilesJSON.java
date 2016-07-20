@@ -32,6 +32,7 @@
 
 package org.mskcc.cbio.portal.servlet;
 
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.util.*;
 import org.mskcc.cbio.portal.model.*;
@@ -41,7 +42,6 @@ import org.mskcc.cbio.portal.util.XssRequestWrapper;
 import org.json.simple.JSONValue;
 import org.json.simple.JSONObject;
 
-import javax.servlet.http.*;
 import javax.servlet.http.*;
 import javax.servlet.ServletException;
 

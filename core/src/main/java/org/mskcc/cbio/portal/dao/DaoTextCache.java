@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.util.CacheUtil;
 
 public class DaoTextCache

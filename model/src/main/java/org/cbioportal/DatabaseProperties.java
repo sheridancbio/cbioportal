@@ -30,9 +30,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.util;
-
-import org.mskcc.cbio.portal.util.GlobalProperties;
+package org.cbioportal;
 
 /**
  * Stores db props (name, id, pw, host) from portal.properties

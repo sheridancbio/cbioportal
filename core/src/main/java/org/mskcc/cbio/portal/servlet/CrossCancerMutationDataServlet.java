@@ -36,10 +36,13 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.cbioportal.util.StringParser;
-import org.mskcc.cbio.portal.dao.*;
-import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.util.*;
-import org.mskcc.cbio.portal.web_api.*;
+import org.cbioportal.QueryBuilderParameter;
+//import org.mskcc.cbio.portal.dao.*;
+//import org.mskcc.cbio.portal.model.*;
+//import org.mskcc.cbio.portal.util.*;
+//import org.mskcc.cbio.portal.web_api.*;
+import org.cbioportal.service.AnnotatedSampleSets;
+import org.cbioportal.model.SampleList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import javax.servlet.ServletConfig;
@@ -85,11 +88,11 @@ public class CrossCancerMutationDataServlet extends HttpServlet {
         ArrayList<String> targetGeneList = stringParser.splitBySpacesOrCommas(request.getParameter("geneList"));
         Integer dataTypePriority;
         try {
-            dataTypePriority = Integer.parseInt(request.getParameter(QueryBuilder.DATA_PRIORITY).trim());
+            dataTypePriority = Integer.parseInt(request.getParameter(QueryBuilderParameter.DATA_PRIORITY).trim());
         } catch (NumberFormatException e) {
             dataTypePriority = 0;
         }
-        ArrayList<String> cancerStudyIdList = stringParser.splitBySpacesOrCommas(request.getParameter(QueryBuilder.CANCER_STUDY_LIST));
+        ArrayList<String> cancerStudyIdList = stringParser.splitBySpacesOrCommas(request.getParameter(QueryBuilderParameter.CANCER_STUDY_LIST));
         HashSet<String> studySet = new HashSet<String>(cancerStudyIdList);
         JSONArray data = new JSONArray();
         try {

@@ -22,7 +22,7 @@
      
 
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	    <property name="staticMethod" value="org.mskcc.cbio.portal.dao.JdbcUtil.setDataSource"/>
+	    <property name="staticMethod" value="org.cbioportal.persistence.legacy.JdbcUtil.setDataSource"/>
 	    <property name="arguments">
 	        <list>
 	            <ref bean="businessDataSource"/>
@@ -67,7 +67,7 @@
 	</bean>
 
 	<bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-	    <property name="staticMethod" value="org.mskcc.cbio.portal.dao.JdbcUtil.setDataSource"/>
+	    <property name="staticMethod" value="org.cbioportal.persistence.legacy.JdbcUtil.setDataSource"/>
 	    <property name="arguments">
 	        <list>
 	            <ref bean="businessDataSource"/>

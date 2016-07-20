@@ -32,14 +32,15 @@
 
 package org.mskcc.cbio.portal.servlet;
 
-import org.mskcc.cbio.portal.util.*;
-import org.mskcc.cbio.portal.util.XDebug;
+import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.cbioportal.QueryBuilderParameter;
+import org.mskcc.cbio.portal.util.*;
+import org.mskcc.cbio.portal.util.XDebug;
 
 /**
  * Central Servlet for performing Cross-Cancer Study Queries.
@@ -70,13 +71,9 @@ public class CrossCancerStudyServlet extends HttpServlet {
                 httpServletRequest.setAttribute(QueryBuilder.ATTRIBUTE_URL_BEFORE_FORWARDING,
                     httpServletRequest.getRequestURL().toString());
             }
-
-            httpServletRequest.setAttribute(QueryBuilder.CANCER_STUDY_ID,
-                AccessControl.ALL_CANCER_STUDIES_ID);
+            httpServletRequest.setAttribute(QueryBuilderParameter.CANCER_STUDY_ID, AccessControl.ALL_CANCER_STUDIES_ID);
             httpServletRequest.setAttribute(QueryBuilder.XDEBUG_OBJECT, xdebug);
-
-            String action = httpServletRequest.getParameter(QueryBuilder.ACTION_NAME);
-
+            String action = httpServletRequest.getParameter(QueryBuilderParameter.ACTION_NAME);
             if (action != null && action.equals(QueryBuilder.ACTION_SUBMIT)) {
                 dispatchToResultsJSP(httpServletRequest, httpServletResponse);
             } else {
@@ -89,16 +86,13 @@ public class CrossCancerStudyServlet extends HttpServlet {
 
     private void dispatchToResultsJSP(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        RequestDispatcher dispatcher =
-                getServletContext().getRequestDispatcher("/WEB-INF/jsp/cross_cancer_results.jsp");
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/jsp/cross_cancer_results.jsp");
         dispatcher.forward(httpServletRequest, httpServletResponse);
     }
 
     private void dispatchToIndexJSP(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        RequestDispatcher dispatcher =
-                getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp");
+        RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/WEB-INF/jsp/index.jsp");
         dispatcher.forward(httpServletRequest, httpServletResponse);
     }
-
 }

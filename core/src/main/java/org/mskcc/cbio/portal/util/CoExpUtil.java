@@ -34,6 +34,7 @@ package org.mskcc.cbio.portal.util;
 
 import java.util.*;
 
+import org.cbioportal.model.SampleList;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.dao.*;
 

@@ -32,6 +32,8 @@
 
 package org.mskcc.cbio.portal.scripts;
 
+import org.cbioportal.model.SampleList;
+import org.cbioportal.model.SampleListCategory;
 import org.mskcc.cbio.portal.model.*;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.util.*;

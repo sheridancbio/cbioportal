@@ -32,7 +32,7 @@
 
 package org.mskcc.cbio.portal.dao;
 
-import org.mskcc.cbio.portal.model.Sample;
+import org.cbioportal.persistence.legacy.JdbcUtil;
 
 import java.sql.*;
 import java.util.*;

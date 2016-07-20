@@ -50,7 +50,7 @@ import org.mskcc.cbio.portal.model.DrugInteraction;
 import org.mskcc.cbio.portal.model.Interaction;
 import org.mskcc.cbio.portal.scripts.drug.AbstractDrugInfoImporter;
 import org.mskcc.cbio.portal.web_api.ConnectionManager;
-import org.mskcc.cbio.portal.util.GlobalProperties;
+import org.cbioportal.GlobalProperties;
 
 /**
  *

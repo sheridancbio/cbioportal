@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.cbioportal.persistence.legacy.JdbcUtil;
 import org.mskcc.cbio.portal.model.Coexpression;
 
 /**

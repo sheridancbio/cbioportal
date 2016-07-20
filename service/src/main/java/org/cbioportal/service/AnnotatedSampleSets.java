@@ -30,9 +30,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.mskcc.cbio.portal.model;
+package org.cbioportal.service;
 
 import java.util.*;
+
+import org.cbioportal.model.SampleList;
 
 /**
  * Annotated Sample Sets.

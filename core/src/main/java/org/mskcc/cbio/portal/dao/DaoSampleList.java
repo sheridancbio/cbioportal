@@ -32,6 +32,9 @@
 
 package org.mskcc.cbio.portal.dao;
 
+import org.cbioportal.persistence.legacy.JdbcUtil;
+import org.cbioportal.model.SampleList;
+import org.cbioportal.model.SampleListCategory;
 import org.mskcc.cbio.portal.model.*;
 
 import java.sql.*;

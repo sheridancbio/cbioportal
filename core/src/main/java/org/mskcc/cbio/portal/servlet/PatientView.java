@@ -32,7 +32,6 @@
 
 package org.mskcc.cbio.portal.servlet;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -57,28 +56,22 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.cbioportal.GlobalProperties;
+import org.cbioportal.PatientViewParameter;
+import org.cbioportal.QueryBuilderParameter;
 import org.cbioportal.persistence.MutationRepository;
+import org.cbioportal.util.WebServerUriBuilder;
 import org.mskcc.cbio.portal.dao.*;
 import org.mskcc.cbio.portal.model.*;
-import org.mskcc.cbio.portal.model.converter.MutationModelConverter;
+import org.mskcc.cbio.portal.util.*;
 import org.mskcc.cbio.portal.util.AccessControl;
 import org.mskcc.cbio.portal.web_api.ConnectionManager;
 import org.mskcc.cbio.portal.web_api.ProtocolException;
-import org.mskcc.cbio.portal.util.*;
-
-import org.apache.log4j.Logger;
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
 import javax.servlet.*;
-import javax.servlet.http.*;
 
 /**
  *
@@ -88,8 +81,6 @@ public class PatientView extends HttpServlet {
     private static Logger logger = Logger.getLogger(PatientView.class);
     public static final String ERROR = "user_error_message";
     public static final String VIEW_TYPE = "view_type";
-    public static final String SAMPLE_ID = "sample_id";
-    public static final String PATIENT_ID = "case_id";
     public static final String PATIENT_ID_ATTR_NAME = "PATIENT_ID";
     public static final String PATIENT_CASE_OBJ = "case_obj";
     public static final String CANCER_STUDY = "cancer_study";
@@ -153,8 +144,8 @@ public class PatientView extends HttpServlet {
         XDebug xdebug = new XDebug( request );
         request.setAttribute(QueryBuilder.XDEBUG_OBJECT, xdebug);
         
-        String cancerStudyId = request.getParameter(QueryBuilder.CANCER_STUDY_ID);
-        request.setAttribute(QueryBuilder.CANCER_STUDY_ID, cancerStudyId);
+        String cancerStudyId = request.getParameter(QueryBuilderParameter.CANCER_STUDY_ID);
+        request.setAttribute(QueryBuilderParameter.CANCER_STUDY_ID, cancerStudyId);
         
         try {
             if (validate(request)) {
@@ -214,15 +205,15 @@ public class PatientView extends HttpServlet {
         request.setAttribute(HAS_SEGMENT_DATA, Boolean.FALSE);
         request.setAttribute(HAS_ALLELE_FREQUENCY_DATA, Boolean.FALSE);
         
-        String sampleIdsStr = request.getParameter(SAMPLE_ID);
-        String patientIdsStr = request.getParameter(PATIENT_ID);
+        String sampleIdsStr = request.getParameter(PatientViewParameter.SAMPLE_ID);
+        String patientIdsStr = request.getParameter(PatientViewParameter.PATIENT_ID);
         if ((sampleIdsStr == null || sampleIdsStr.isEmpty())
                 && (patientIdsStr == null || patientIdsStr.isEmpty())) {
             request.setAttribute(ERROR, "Please specify at least one case ID or patient ID. ");
             return false;
         }
         
-        String cancerStudyId = (String) request.getAttribute(QueryBuilder.CANCER_STUDY_ID);
+        String cancerStudyId = (String) request.getAttribute(QueryBuilderParameter.CANCER_STUDY_ID);
         if (cancerStudyId==null) {
             request.setAttribute(ERROR, "Please specify cancer study ID. ");
             return false;
@@ -286,7 +277,7 @@ public class PatientView extends HttpServlet {
         List<String> sampleIds = new ArrayList<String>(sampleIdSet);
         sortSampleIds(cancerStudy.getInternalId(), patientId, sampleIds);
         
-        request.setAttribute(SAMPLE_ID, sampleIds);
+        request.setAttribute(PatientViewParameter.SAMPLE_ID, sampleIds);
         
         request.setAttribute(QueryBuilder.HTML_TITLE, "Patient: "+StringUtils.join(sampleIds,","));
         
@@ -427,7 +418,7 @@ public class PatientView extends HttpServlet {
     }
     
     private void setClinicalInfo(HttpServletRequest request) throws DaoException {
-        List<String> samples = (List<String>)request.getAttribute(SAMPLE_ID);
+        List<String> samples = (List<String>)request.getAttribute(PatientViewParameter.SAMPLE_ID);
 	boolean isPatientView = request.getAttribute(VIEW_TYPE) == "patient";
         
         CancerStudy cancerStudy = (CancerStudy)request.getAttribute(CANCER_STUDY);
@@ -489,7 +480,7 @@ public class PatientView extends HttpServlet {
             request.setAttribute("has_timeline_data", DaoClinicalEvent.timeEventsExistForPatient(patient.getInternalId()));
         }
 
-        request.setAttribute(PATIENT_ID, patientId);
+        request.setAttribute(PatientViewParameter.PATIENT_ID, patientId);
         
         // images
         String tisImageUrl = getTissueImageIframeUrl(cancerStudy.getCancerStudyStableId(), samples.size()>1?patientId:sampleId);
@@ -513,7 +504,7 @@ public class PatientView extends HttpServlet {
         }
         
         // test if images exist for the case
-        String metaUrl = GlobalProperties.getDigitalSlideArchiveMetaUrl(caseId);
+        String metaUrl = WebServerUriBuilder.getDigitalSlideArchiveMetaUrl(caseId);
         
         HttpClient client = ConnectionManager.getHttpClient(5000);
 
@@ -529,7 +520,7 @@ public class PatientView extends HttpServlet {
                     Matcher m = p.matcher(line);
                     if (m.find()) {
                         int count = Integer.parseInt(m.group(1));
-                        return count>0 ? GlobalProperties.getDigitalSlideArchiveIframeUrl(caseId) : null;
+                        return count>0 ? WebServerUriBuilder.getDigitalSlideArchiveIframeUrl(caseId) : null;
                     }
                 }
                 
@@ -559,7 +550,7 @@ public class PatientView extends HttpServlet {
         if (map==null) {
             map = new HashMap<String,String>();
             
-            String[] pathReportUrls = GlobalProperties.getTCGAPathReportUrl(typeOfCancer);
+            String[] pathReportUrls = WebServerUriBuilder.getTCGAPathReportUrl(typeOfCancer);
             if (pathReportUrls!=null) {
                 for (String pathReportUrl : pathReportUrls) {
                     List<String> pathReportDirs = extractLinksByPattern(pathReportUrl,tcgaPathReportDirLinePattern);
