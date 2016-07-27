@@ -21,6 +21,9 @@ public interface MutationService {
 
     Map<String, Integer> getMutationCount(String mutationGeneticProfileStableId, List<String> sampleStableIds);
 
-    List<Map<String,Object>> getSmg(String mutationGeneticProfileStableId, List<String> sampleStableIds)
-            throws DaoException;
+    List<Map<String,Object>> getSmg(String mutationGeneticProfileStableId, List<String> sampleStableIds) throws DaoException;
+
+    List<?> getMutationsForProfilesAndGenes(List<String> geneticProfileStableIds, List<String> hugoGeneSymbols, List<String> providedSampleIds, List<String> sampleSetIds, List<String> sampleIdsKeys);
+
+    List<?> getMutationsForStudiesAndGenes(List<String> hugoGeneSymbols, int dataPriority, List<String> cancerStudies);
 }

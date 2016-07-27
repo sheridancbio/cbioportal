@@ -1,22 +1,19 @@
 package org.cbioportal.service.impl;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import org.cbioportal.model.Mutation;
 import org.cbioportal.persistence.MutationRepository;
 import org.cbioportal.persistence.dto.AltCount;
 import org.cbioportal.service.MutationService;
+import org.json.simple.JSONArray;
 import org.mskcc.cbio.portal.dao.DaoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Service
 public class MutationServiceImpl implements MutationService {
-
     @Autowired
     private MutationRepository mutationRepository;
     @Autowired
@@ -25,6 +22,10 @@ public class MutationServiceImpl implements MutationService {
     private MutationCountCalculator mutationCountCalculator;
     @Autowired
     private SmgCalculator smgCalculator;
+    @Autowired
+    private MutationsForProfilesAndGenes mutationsForProfilesAndGenes;
+    @Autowired
+    private MutationsForStudiesAndGenes mutationsForStudiesAndGenes;
 
     public List<Mutation> getMutationsDetailed(List<String> geneticProfileStableIds, List<String> hugoGeneSymbols,
                                                List<String> sampleStableIds, String sampleListStableId) {
@@ -53,5 +54,13 @@ public class MutationServiceImpl implements MutationService {
             throws DaoException {
 
         return smgCalculator.calculate(mutationGeneticProfileStableId, sampleStableIds);
+    }
+
+    public List<?> getMutationsForProfilesAndGenes(List<String> geneticProfileStableIds, List<String> hugoGeneSymbols, List<String> providedSampleIds, List<String> sampleSetIds, List<String> sampleIdsKeys) {
+        return mutationsForProfilesAndGenes.get(geneticProfileStableIds, hugoGeneSymbols, providedSampleIds, sampleSetIds, sampleIdsKeys);
+    }
+
+    public List<?> getMutationsForStudiesAndGenes(List<String> hugoGeneSymbols, int dataPriority, List<String> cancerStudies) {
+        return mutationsForStudiesAndGenes.get(hugoGeneSymbols, dataPriority, cancerStudies);
     }
 }
