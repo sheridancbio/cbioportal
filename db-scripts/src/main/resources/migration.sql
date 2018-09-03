@@ -419,11 +419,11 @@ CREATE TABLE `reference_genome_gene` (
 
 INSERT INTO reference_genome_gene (ENTREZ_GENE_ID, CYTOBAND, EXONIC_LENGTH, CHR, REFERENCE_GENOME_ID)
 (SELECT 
-	ENTREZ_GENE_ID, 
-	CYTOBAND, 
-	LENGTH,
+    ENTREZ_GENE_ID, 
+    CYTOBAND, 
+    LENGTH,
     SUBSTRING_INDEX(SUBSTRING_INDEX(SUBSTRING_INDEX(gene.CYTOBAND,IF(LOCATE('p', gene.CYTOBAND), 'p', 'q'), 1),'q',1),'cen',1),
-	1 
+    1 
 FROM `gene`);
 
 UPDATE info SET DB_SCHEMA_VERSION="2.4.1";
@@ -559,3 +559,14 @@ CREATE TABLE `cancer_study_tags` (
   FOREIGN KEY (`CANCER_STUDY_ID`) REFERENCES `cancer_study` (`CANCER_STUDY_ID`) ON DELETE CASCADE
 );
 UPDATE `info` SET `DB_SCHEMA_VERSION`="2.7.4";
+
+##version: 2.8.0
+CREATE TABLE `data_access_tokens` (
+    `TOKEN` varchar(50) NOT NULL,
+    `USERNAME` varchar(255) NOT NULL,
+    `EXPIRATION` datetime NOT NULL,
+    `CREATION` datetime,
+    PRIMARY KEY (`TOKEN`),
+    FOREIGN KEY (`USERNAME`) REFERENCES `users` (`EMAIL`) ON DELETE CASCADE
+);
+UPDATE `info` SET `DB_SCHEMA_VERSION`="2.8.0";
