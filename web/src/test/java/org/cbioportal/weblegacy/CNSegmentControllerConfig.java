@@ -31,13 +31,14 @@
 */
 package org.cbioportal.weblegacy;
 
+import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.mockito.Mockito;
+import org.mskcc.cbio.portal.service.CNSegmentService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.mskcc.cbio.portal.service.CNSegmentService;
 
 @Configuration
 @EnableWebMvc
@@ -47,5 +48,9 @@ public class CNSegmentControllerConfig extends WebMvcConfigurerAdapter {
     @Bean
     public CNSegmentService cNSegmentService() {
         return Mockito.mock(CNSegmentService.class);
+    }
+    @Bean
+    public CacheMapUtil cacheMapUtil() {
+        return new CacheMapUtil();
     }
 }

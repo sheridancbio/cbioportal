@@ -32,9 +32,10 @@
 package org.cbioportal.weblegacy;
 
 import java.util.List;
-import org.mskcc.cbio.portal.service.MutationalSignatureService;
+import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.cbioportal.web.config.CustomObjectMapper;
 import org.mockito.Mockito;
+import org.mskcc.cbio.portal.service.MutationalSignatureService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -56,5 +57,9 @@ public class MutationalSignatureControllerConfig extends WebMvcConfigurerAdapter
     @Bean
     public MutationalSignatureService mutationalSignatureService() {
         return Mockito.mock(MutationalSignatureService.class);
+    }
+    @Bean
+    public CacheMapUtil cacheMapUtil() {
+        return new CacheMapUtil();
     }
 }

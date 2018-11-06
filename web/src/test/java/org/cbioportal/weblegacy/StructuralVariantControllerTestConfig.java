@@ -32,8 +32,9 @@
 
 package org.cbioportal.weblegacy;
 
-import org.mskcc.cbio.portal.service.StructuralVariantService;
+import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.mockito.Mockito;
+import org.mskcc.cbio.portal.service.StructuralVariantService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -48,5 +49,9 @@ public class StructuralVariantControllerTestConfig extends WebMvcConfigurerAdapt
     @Bean
     public StructuralVariantService svService(){
         return Mockito.mock(StructuralVariantService.class);
+    }
+    @Bean
+    public CacheMapUtil cacheMapUtil() {
+        return new CacheMapUtil();
     }
 }

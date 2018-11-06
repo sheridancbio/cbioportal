@@ -23,9 +23,6 @@
            </b:property>
         </b:bean>
 
-    <!-- We are autowiring some components from web into the customPermissionEvaluator below -->
-    <context:component-scan base-package="org.cbioportal.web.util" />
-
     <!-- support for general annotations within class definitions (used in AccessControl) -->
     <context:annotation-config/>
 

@@ -31,16 +31,17 @@
 */
 package org.cbioportal.weblegacy;
 
-import org.mskcc.cbio.portal.persistence.CosmicCountMapperLegacy;
-import org.mskcc.cbio.portal.persistence.MutationMapperLegacy;
+import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.cbioportal.service.CosmicCountService;
 import org.mockito.Mockito;
 import org.mskcc.cbio.portal.persistence.CancerTypeMapperLegacy;
 import org.mskcc.cbio.portal.persistence.ClinicalDataMapperLegacy;
 import org.mskcc.cbio.portal.persistence.ClinicalFieldMapper;
+import org.mskcc.cbio.portal.persistence.CosmicCountMapperLegacy;
 import org.mskcc.cbio.portal.persistence.GeneAliasMapper;
 import org.mskcc.cbio.portal.persistence.GeneMapperLegacy;
 import org.mskcc.cbio.portal.persistence.GeneticProfileMapperLegacy;
+import org.mskcc.cbio.portal.persistence.MutationMapperLegacy;
 import org.mskcc.cbio.portal.persistence.PatientMapperLegacy;
 import org.mskcc.cbio.portal.persistence.ProfileDataMapper;
 import org.mskcc.cbio.portal.persistence.SampleListMapperLegacy;
@@ -112,5 +113,9 @@ public class ApiControllerConfig extends WebMvcConfigurerAdapter {
     @Bean
     public StudyMapperLegacy studyMapper() {
         return Mockito.mock(StudyMapperLegacy.class);
+    }
+    @Bean
+    public CacheMapUtil cacheMapUtil() {
+        return new CacheMapUtil();
     }
 }

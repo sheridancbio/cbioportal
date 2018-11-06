@@ -36,8 +36,9 @@ package org.cbioportal.weblegacy;
  * @author heinsz
  */
 
-import org.mskcc.cbio.portal.service.GenePanelServiceLegacy;
+import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.mockito.Mockito;
+import org.mskcc.cbio.portal.service.GenePanelServiceLegacy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -53,5 +54,9 @@ public class GenePanelControllerLegacyConfig extends WebMvcConfigurerAdapter {
     @Bean
     public GenePanelServiceLegacy genePanelService() {
         return Mockito.mock(GenePanelServiceLegacy.class);
+    }
+    @Bean
+    public CacheMapUtil cacheMapUtil() {
+        return new CacheMapUtil();
     }
 }
