@@ -1,6 +1,7 @@
 package org.cbioportal.web;
 
 import io.swagger.annotations.Api;
+import springfox.documentation.annotations.ApiIgnore;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.cbioportal.model.Patient;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -41,6 +43,9 @@ public class PatientController {
 
     @Autowired
     private UniqueKeyExtractor uniqueKeyExtractor;
+
+    @Autowired
+    private PatientFilterExtractor patientFilterExtractor;
 
     @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients", method = RequestMethod.GET,
@@ -88,11 +93,14 @@ public class PatientController {
         return new ResponseEntity<>(patientService.getPatientInStudy(studyId, patientId), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasPermission(#patientFilter, 'PatientFilter', 'read')")
+//    @PreAuthorize("#{ hasPermission(patientFilterExtractor.extractStudyFromPatientFilter(patientFilter), 'CancerStudy', 'read') }")
+    @PreAuthorize("hasPermission(#involvedCancerStudies, 'CancerStudy', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch patients by ID")
     public ResponseEntity<List<Patient>> fetchPatients(
+        @ApiIgnore
+        @RequestAttribute(required = false) String involvedCancerStudies,
         @ApiParam(required = true, value = "List of patient identifiers")
         @Valid @RequestBody PatientFilter patientFilter,
         @ApiParam("Level of detail of the response")
