@@ -1,14 +1,12 @@
 package org.cbioportal.web;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.Valid;
 import org.cbioportal.model.Patient;
 import org.cbioportal.service.exception.PatientNotFoundException;
 import org.cbioportal.service.exception.StudyNotFoundException;
@@ -26,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,18 +93,13 @@ public class PatientController {
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Fetch patients by ID")
-    @ApiImplicitParams({
-        // a PatientFilter parameter arrives in the Body of this POST request as JSON. It is parsed by an HttpRequestInterceptor and stored as a request attribute TODO: complete this explanation
-        // TODO: the "List of patient identifiers" description is incorrect - fix
-        // TODO: define the datatype for the body parameter so that it shows up correctly in swagger-ui
-        @ApiImplicitParam(name = "patientFilter", value = "List of patient identifiers", required = true, dataType = "string", paramType = "body")
-    })
     public ResponseEntity<List<Patient>> fetchPatients(
         @ApiIgnore // prevent reference to this attribute in the swagger-ui interface
-        @RequestAttribute(required = true, value = "involvedCancerStudies") Collection<String> involvedCancerStudies,
+        @RequestAttribute(required = false, value = "involvedCancerStudies") Collection<String> involvedCancerStudies,
         @ApiIgnore // prevent reference to this attribute in the swagger-ui interface. this attribute is needed for the @PreAuthorize tag above.
-        @RequestAttribute(required = true, value = "interceptedPatientFilter") PatientFilter interceptedPatientFilter,
+        @RequestAttribute(required = false, value = "interceptedPatientFilter") PatientFilter interceptedPatientFilter,
+        @ApiParam(required = true, value = "List of patient identifiers")
+        @Valid @RequestBody(required = false) PatientFilter patientFilter,
         @ApiParam("Level of detail of the response")
         @RequestParam(defaultValue = "SUMMARY") Projection projection) {
 

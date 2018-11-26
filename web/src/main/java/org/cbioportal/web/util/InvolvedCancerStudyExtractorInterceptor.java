@@ -16,34 +16,35 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 @Component
 public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorAdapter {
 
+    @Autowired
+    private UniqueKeyExtractor uniqueKeyExtractor;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
     public static final String PATIENT_FETCH_PATH = ".patients.fetch";
-
-    @Autowired
-    UniqueKeyExtractor uniqueKeyExtractor;
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (!request.getMethod().equals("POST")) {
             return true; // no attribute extraction needed because all user supplied filter objects are in POST requests
         }
+        ResettableHttpServletRequestWrapper wrappedRequest = new ResettableHttpServletRequestWrapper((HttpServletRequest) request);
         String requestPathInfo = request.getPathInfo();
         if (requestPathInfo.equals(PATIENT_FETCH_PATH)) {
-            return extractAttributesFromPatientFilter(request);
+            return extractAttributesFromPatientFilter(wrappedRequest);
         }
-        return true; // default is "OK" for all non-POST requests
+        return true;
     }
 
     private boolean extractAttributesFromPatientFilter(HttpServletRequest request) {
         try {
             PatientFilter patientFilter = objectMapper.readValue(request.getReader(), PatientFilter.class);
-            LOG.error("extracted patientFilter: " + patientFilter.toString());
+            LOG.debug("extracted patientFilter: " + patientFilter.toString());
             Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromPatientFilter(patientFilter);
-            LOG.error("setting interceptedPatientFilter to " + patientFilter);
+            LOG.debug("setting interceptedPatientFilter to " + patientFilter);
             request.setAttribute("interceptedPatientFilter", patientFilter);
-            LOG.error("setting involvedCancerStudies to " + cancerStudyIdCollection);
+            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
             request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of patientFilter: " + e);
