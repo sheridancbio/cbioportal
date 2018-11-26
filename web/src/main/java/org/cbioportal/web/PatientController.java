@@ -1,36 +1,37 @@
 package org.cbioportal.web;
 
-import io.swagger.annotations.Api;
-import springfox.documentation.annotations.ApiIgnore;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.cbioportal.model.Patient;
-import org.cbioportal.service.PatientService;
 import org.cbioportal.service.exception.PatientNotFoundException;
 import org.cbioportal.service.exception.StudyNotFoundException;
+import org.cbioportal.service.PatientService;
 import org.cbioportal.web.config.annotation.PublicApi;
 import org.cbioportal.web.parameter.*;
 import org.cbioportal.web.parameter.sort.PatientSortBy;
 import org.cbioportal.web.util.UniqueKeyExtractor;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.List;
+import springfox.documentation.annotations.ApiIgnore;
 
 @PublicApi
 @RestController
@@ -90,10 +91,10 @@ public class PatientController {
         return new ResponseEntity<>(patientService.getPatientInStudy(studyId, patientId), HttpStatus.OK);
     }
 
+    //TODO: this should be a list of cancer studies, computed from the PatientFilter argument. Rename it to something appropriate.
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'CancerStudy', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation("Fetch patients by ID")
     public ResponseEntity<List<Patient>> fetchPatients(
         @ApiIgnore
         @RequestAttribute(required = false, value = "involvedCancerStudies") String involvedCancerStudies,
@@ -123,6 +124,7 @@ public class PatientController {
             } else {
                 uniqueKeyExtractor.extractUniqueKeys(interceptedPatientFilter.getUniquePatientKeys(), studyIds, patientIds);
             }
+//TODO: since we are already extracting the studyIds in the interceptor, we do not need to do it here. Maybe we should extract both there and use them here.
             return new ResponseEntity<>(
                 patientService.fetchPatients(studyIds, patientIds, projection.name()), HttpStatus.OK);
         }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Component
 public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorAdapter {
 
