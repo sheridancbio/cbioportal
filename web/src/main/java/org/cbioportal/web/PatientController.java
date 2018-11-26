@@ -1,13 +1,19 @@
 package org.cbioportal.web;
 
 import io.swagger.annotations.Api;
-import springfox.documentation.annotations.ApiIgnore;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.ArrayList;
+import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import org.cbioportal.model.Patient;
-import org.cbioportal.service.PatientService;
 import org.cbioportal.service.exception.PatientNotFoundException;
 import org.cbioportal.service.exception.StudyNotFoundException;
+import org.cbioportal.service.PatientService;
 import org.cbioportal.web.config.annotation.PublicApi;
 import org.cbioportal.web.parameter.*;
 import org.cbioportal.web.parameter.sort.PatientSortBy;
@@ -17,20 +23,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.List;
+import springfox.documentation.annotations.ApiIgnore;
 
 @PublicApi
 @RestController
@@ -43,9 +44,6 @@ public class PatientController {
 
     @Autowired
     private UniqueKeyExtractor uniqueKeyExtractor;
-
-    @Autowired
-    private PatientFilterExtractor patientFilterExtractor;
 
     @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients", method = RequestMethod.GET,
@@ -93,16 +91,22 @@ public class PatientController {
         return new ResponseEntity<>(patientService.getPatientInStudy(studyId, patientId), HttpStatus.OK);
     }
 
-//    @PreAuthorize("#{ hasPermission(patientFilterExtractor.extractStudyFromPatientFilter(patientFilter), 'CancerStudy', 'read') }")
+    //TODO: this should be a list of cancer studies, computed from the PatientFilter argument. Rename it to something appropriate.
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'CancerStudy', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch patients by ID")
+    @ApiImplicitParams({
+        // a PatientFilter parameter arrives in the Body of this POST request as JSON. It is parsed by an HttpRequestInterceptor and stored as a request attribute TODO: complete this explanation
+        // TODO: the "List of patient identifiers" description is incorrect - fix
+        // TODO: define the datatype for the body parameter so that it shows up correctly in swagger-ui
+        @ApiImplicitParam(name = "patientFilter", value = "List of patient identifiers", required = true, dataType = "string", paramType = "body")
+    })
     public ResponseEntity<List<Patient>> fetchPatients(
-        @ApiIgnore
-        @RequestAttribute(required = false) String involvedCancerStudies,
-        @ApiParam(required = true, value = "List of patient identifiers")
-        @Valid @RequestBody PatientFilter patientFilter,
+        @ApiIgnore // prevent reference to this attribute in the swagger-ui interface
+        @RequestAttribute(required = true, value = "involvedCancerStudies") String involvedCancerStudies,
+        @ApiIgnore // prevent reference to this attribute in the swagger-ui interface. this attribute is needed for the @PreAuthorize tag above.
+        @RequestAttribute(required = true, value = "patientFilterInterceptor") PatientFilter patientFilterInterceptor,
         @ApiParam("Level of detail of the response")
         @RequestParam(defaultValue = "SUMMARY") Projection projection) {
 
@@ -111,20 +115,21 @@ public class PatientController {
 
         if (projection == Projection.META) {
             HttpHeaders responseHeaders = new HttpHeaders();
-            if (patientFilter.getPatientIdentifiers() != null) {
-                extractStudyAndPatientIds(patientFilter, studyIds, patientIds);
+            if (patientFilterInterceptor.getPatientIdentifiers() != null) {
+                extractStudyAndPatientIds(patientFilterInterceptor, studyIds, patientIds);
             } else {
-                uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIds, patientIds);
+                uniqueKeyExtractor.extractUniqueKeys(patientFilterInterceptor.getUniquePatientKeys(), studyIds, patientIds);
             }
             responseHeaders.add(HeaderKeyConstants.TOTAL_COUNT, patientService.fetchMetaPatients(studyIds, patientIds)
                 .getTotalCount().toString());
             return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
         } else {
-            if (patientFilter.getPatientIdentifiers() != null) {
-                extractStudyAndPatientIds(patientFilter, studyIds, patientIds);
+            if (patientFilterInterceptor.getPatientIdentifiers() != null) {
+                extractStudyAndPatientIds(patientFilterInterceptor, studyIds, patientIds);
             } else {
-                uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIds, patientIds);
+                uniqueKeyExtractor.extractUniqueKeys(patientFilterInterceptor.getUniquePatientKeys(), studyIds, patientIds);
             }
+//TODO: since we are already extracting the studyIds in the interceptor, we do not need to do it here. Maybe we should extract both there and use them here.
             return new ResponseEntity<>(
                 patientService.fetchPatients(studyIds, patientIds, projection.name()), HttpStatus.OK);
         }
