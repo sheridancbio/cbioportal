@@ -44,9 +44,6 @@ public class PatientController {
     @Autowired
     private UniqueKeyExtractor uniqueKeyExtractor;
 
-    @Autowired
-    private PatientFilterExtractor patientFilterExtractor;
-
     @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,7 +90,6 @@ public class PatientController {
         return new ResponseEntity<>(patientService.getPatientInStudy(studyId, patientId), HttpStatus.OK);
     }
 
-//    @PreAuthorize("#{ hasPermission(patientFilterExtractor.extractStudyFromPatientFilter(patientFilter), 'CancerStudy', 'read') }")
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'CancerStudy', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
