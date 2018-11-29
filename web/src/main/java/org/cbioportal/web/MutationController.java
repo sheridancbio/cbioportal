@@ -58,7 +58,7 @@ public class MutationController {
     @Autowired
     private MolecularProfileService molecularProfileService;
 
-    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfile', 'read')")
+    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfileId', 'read')")
     @RequestMapping(value = "/molecular-profiles/{molecularProfileId}/mutations", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get mutations in a molecular profile by Sample List ID")
@@ -98,7 +98,7 @@ public class MutationController {
         }
     }
 
-    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfile', 'read')")
+    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfileId', 'read')")
     @RequestMapping(value = "/molecular-profiles/{molecularProfileId}/mutations/fetch", method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch mutations in a molecular profile")
@@ -151,6 +151,7 @@ public class MutationController {
         }
     }
 
+//TODO: replace this with attribute
     @PreAuthorize("hasPermission(#mutationMultipleStudyFilter, 'MutationMultipleStudyFilter', 'read')")
     @RequestMapping(value = "/mutations/fetch", method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

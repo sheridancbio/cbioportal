@@ -1,11 +1,15 @@
 package org.cbioportal.web.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cbioportal.web.parameter.PatientFilter;
+import org.cbioportal.web.parameter.PatientIdentifier;
+import org.cbioportal.web.util.UniqueKeyExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -13,34 +17,53 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
-    public static final String PATIENT_FETCH_PATH = "/patients/fetch";
+    public static final String PATIENT_FETCH_PATH = ".patients.fetch";
+
+    @Autowired
+    UniqueKeyExtractor uniqueKeyExtractor;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (!request.getMethod().equals("POST")) {
             return true; // no attribute extraction needed because all user supplied filter objects are in POST requests
         }
-        ObjectMapper mapper = new ObjectMapper();
         String requestPathInfo = request.getPathInfo();
         if (requestPathInfo.equals(PATIENT_FETCH_PATH)) {
-            try {
-                PatientFilter patientFilter = mapper.readValue(request.getReader(), PatientFilter.class);
-                LOG.error("extracted patientFilter: " + patientFilter.toString());
-                LOG.error("patientFilter patientIdentifiers: " + patientFilter.getPatientIdentifiers());
-                LOG.error("patientFilter uniquePatientKeys: " + patientFilter.getUniquePatientKeys());
-/*
-            //TODO: add the logic from CancerStudyPermissionEvalator here to get the cancer study list
-*/           
-                LOG.error("setting patientFilterInterceptor to " + patientFilter.toString());
-                request.setAttribute("patientFilterInterceptor", patientFilter);
-                LOG.error("setting involvedCancerStudies to " + "mskimpact");
-                request.setAttribute("involvedCancerStudies", "mskimpact");
-            } catch (Exception e) {
-                LOG.error("exception thrown during extraction of patientFilter: " + e);
-                //TODO: do the right thing when an invalidly formatted JSON argument is passed in. Previously the @Valid tag in the controller did automatic validation of this argument
-                return false;
-            }
-            return true; // return "OK" if exception not thrown
+            return extractAttributesFromPatientFilter(request);
         }
         return true; // default is "OK" for all non-POST requests
     }
+
+    private boolean extractAttributesFromPatientFilter(HttpServletRequest request) {
+        try {
+            PatientFilter patientFilter = objectMapper.readValue(request.getReader(), PatientFilter.class);
+            LOG.error("extracted patientFilter: " + patientFilter.toString());
+            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromPatientFilter(patientFilter);
+            LOG.error("setting interceptedPatientFilter to " + patientFilter);
+            request.setAttribute("interceptedPatientFilter", patientFilter);
+            LOG.error("setting involvedCancerStudies to " + cancerStudyIdCollection);
+            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+        } catch (Exception e) {
+            LOG.error("exception thrown during extraction of patientFilter: " + e);
+            //TODO: do the right thing when an invalidly formatted JSON argument is passed in. Previously the @Valid tag in the controller did automatic validation of this argument
+            return false;
+        }
+        return true;
+    }
+
+    private Collection<String> extractCancerStudyIdsFromPatientFilter(PatientFilter patientFilter) {
+        // use hashset as the study list in the patientFilter will usually be populated with many duplicate values
+        Set<String> studyIdSet = new HashSet<String>();
+        if (patientFilter.getPatientIdentifiers() != null) {
+            for (PatientIdentifier patientIdentifier : patientFilter.getPatientIdentifiers()) {
+                studyIdSet.add(patientIdentifier.getStudyId());
+            }
+        } else {
+            uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIdSet);
+        }
+        return studyIdSet;
+    }
+
 }

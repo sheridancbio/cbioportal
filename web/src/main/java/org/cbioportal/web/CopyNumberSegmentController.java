@@ -46,7 +46,7 @@ public class CopyNumberSegmentController {
     @Autowired
     private CopyNumberSegmentService copyNumberSegmentService;
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/samples/{sampleId}/copy-number-segments", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get copy number segments in a sample in a study")
@@ -83,6 +83,7 @@ public class CopyNumberSegmentController {
         }
     }
 
+//TODO: replace this with attribute ... this is equivalent to a filter, and the code from CancerStudyPermissionEvaluator just loops through the sample list and extracts a set of studyIds from them
     @PreAuthorize("hasPermission(#sampleIdentifiers, 'List<SampleIdentifier>', 'read')")
     @RequestMapping(value = "/copy-number-segments/fetch", method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -47,7 +47,7 @@ public class StructuralVariantServiceImpl implements StructuralVariantService {
     StructuralVariantRepository structuralVariantRepository;
     
     @Override
-    @PreAuthorize("hasPermission(#geneticProfileStableIds, 'List<GeneticProfileId>', 'read')")
+    @PreAuthorize("hasPermission(#geneticProfileStableIds, 'Collection<GeneticProfileId>', 'read')")
     public List<StructuralVariant> getStructuralVariant(List<String> geneticProfileStableIds, List<String> hugoGeneSymbols, List<String> sampleStableIds){
         return structuralVariantRepository.getStructuralVariant(geneticProfileStableIds, hugoGeneSymbols, sampleStableIds);
     }

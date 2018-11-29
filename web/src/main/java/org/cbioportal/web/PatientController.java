@@ -6,8 +6,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import org.cbioportal.model.Patient;
@@ -45,7 +44,7 @@ public class PatientController {
     @Autowired
     private UniqueKeyExtractor uniqueKeyExtractor;
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get all patients in a study")
@@ -78,7 +77,7 @@ public class PatientController {
         }
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients/{patientId}", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get a patient in a study")
@@ -92,7 +91,7 @@ public class PatientController {
     }
 
     //TODO: this should be a list of cancer studies, computed from the PatientFilter argument. Rename it to something appropriate.
-    @PreAuthorize("hasPermission(#involvedCancerStudies, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch patients by ID")
@@ -104,9 +103,9 @@ public class PatientController {
     })
     public ResponseEntity<List<Patient>> fetchPatients(
         @ApiIgnore // prevent reference to this attribute in the swagger-ui interface
-        @RequestAttribute(required = true, value = "involvedCancerStudies") String involvedCancerStudies,
+        @RequestAttribute(required = true, value = "involvedCancerStudies") Collection<String> involvedCancerStudies,
         @ApiIgnore // prevent reference to this attribute in the swagger-ui interface. this attribute is needed for the @PreAuthorize tag above.
-        @RequestAttribute(required = true, value = "patientFilterInterceptor") PatientFilter patientFilterInterceptor,
+        @RequestAttribute(required = true, value = "interceptedPatientFilter") PatientFilter interceptedPatientFilter,
         @ApiParam("Level of detail of the response")
         @RequestParam(defaultValue = "SUMMARY") Projection projection) {
 
@@ -115,19 +114,19 @@ public class PatientController {
 
         if (projection == Projection.META) {
             HttpHeaders responseHeaders = new HttpHeaders();
-            if (patientFilterInterceptor.getPatientIdentifiers() != null) {
-                extractStudyAndPatientIds(patientFilterInterceptor, studyIds, patientIds);
+            if (interceptedPatientFilter.getPatientIdentifiers() != null) {
+                extractStudyAndPatientIds(interceptedPatientFilter, studyIds, patientIds);
             } else {
-                uniqueKeyExtractor.extractUniqueKeys(patientFilterInterceptor.getUniquePatientKeys(), studyIds, patientIds);
+                uniqueKeyExtractor.extractUniqueKeys(interceptedPatientFilter.getUniquePatientKeys(), studyIds, patientIds);
             }
             responseHeaders.add(HeaderKeyConstants.TOTAL_COUNT, patientService.fetchMetaPatients(studyIds, patientIds)
                 .getTotalCount().toString());
             return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
         } else {
-            if (patientFilterInterceptor.getPatientIdentifiers() != null) {
-                extractStudyAndPatientIds(patientFilterInterceptor, studyIds, patientIds);
+            if (interceptedPatientFilter.getPatientIdentifiers() != null) {
+                extractStudyAndPatientIds(interceptedPatientFilter, studyIds, patientIds);
             } else {
-                uniqueKeyExtractor.extractUniqueKeys(patientFilterInterceptor.getUniquePatientKeys(), studyIds, patientIds);
+                uniqueKeyExtractor.extractUniqueKeys(interceptedPatientFilter.getUniquePatientKeys(), studyIds, patientIds);
             }
 //TODO: since we are already extracting the studyIds in the interceptor, we do not need to do it here. Maybe we should extract both there and use them here.
             return new ResponseEntity<>(
