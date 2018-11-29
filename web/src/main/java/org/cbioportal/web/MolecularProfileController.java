@@ -72,7 +72,7 @@ public class MolecularProfileController {
         }
     }
 
-    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfile', 'read')")
+    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfileId', 'read')")
     @RequestMapping(value = "/molecular-profiles/{molecularProfileId}", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get molecular profile")
@@ -83,7 +83,7 @@ public class MolecularProfileController {
         return new ResponseEntity<>(molecularProfileService.getMolecularProfile(molecularProfileId), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/molecular-profiles", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get all molecular profiles in a study")
@@ -116,6 +116,7 @@ public class MolecularProfileController {
         }
     }
 
+//TODO: replace this with attribute
     @PreAuthorize("hasPermission(#molecularProfileFilter, 'MolecularProfileFilter', 'read')")
     @RequestMapping(value = "/molecular-profiles/fetch", method = RequestMethod.POST, 
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

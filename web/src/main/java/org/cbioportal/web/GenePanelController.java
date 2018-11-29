@@ -101,7 +101,7 @@ public class GenePanelController {
         return new ResponseEntity<>(genePanelService.fetchGenePanels(genePanelIds, projection.name()), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfile', 'read')")
+    @PreAuthorize("hasPermission(#molecularProfileId, 'MolecularProfileId', 'read')")
     @RequestMapping(value = "/molecular-profiles/{molecularProfileId}/gene-panel-data/fetch", method = RequestMethod.POST, 
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get gene panel data")
@@ -123,6 +123,7 @@ public class GenePanelController {
         return new ResponseEntity<>(genePanelDataList, HttpStatus.OK);
     }
 
+//TODO: replace this with attribute
     @PreAuthorize("hasPermission(#genePanelMultipleStudyFilter, 'GenePanelMultipleStudyFilter', 'read')")
     @RequestMapping(value = "/gene-panel-data/fetch", method = RequestMethod.POST, 
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

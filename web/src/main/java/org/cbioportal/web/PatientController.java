@@ -12,8 +12,7 @@ import org.cbioportal.web.util.UniqueKeyExtractor;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -45,7 +44,7 @@ public class PatientController {
     @Autowired
     private UniqueKeyExtractor uniqueKeyExtractor;
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get all patients in a study")
@@ -78,7 +77,7 @@ public class PatientController {
         }
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/studies/{studyId}/patients/{patientId}", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get a patient in a study")
@@ -92,12 +91,12 @@ public class PatientController {
     }
 
     //TODO: this should be a list of cancer studies, computed from the PatientFilter argument. Rename it to something appropriate.
-    @PreAuthorize("hasPermission(#involvedCancerStudies, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Patient>> fetchPatients(
         @ApiIgnore
-        @RequestAttribute(required = false, value = "involvedCancerStudies") String involvedCancerStudies,
+        @RequestAttribute(required = false, value = "involvedCancerStudies") Collection<String> involvedCancerStudies,
         @ApiIgnore
         @RequestAttribute(required = false, value = "interceptedPatientFilter") PatientFilter interceptedPatientFilter,
         @ApiParam(required = true, value = "List of patient identifiers")

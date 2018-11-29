@@ -79,7 +79,7 @@ public class StudyController {
         }
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get a study")
@@ -90,7 +90,7 @@ public class StudyController {
         return new ResponseEntity<>(studyService.getStudy(studyId), HttpStatus.OK);
     }
 
-    @PreAuthorize("hasPermission(#studyIds, 'List<CancerStudyId>', 'read')")
+    @PreAuthorize("hasPermission(#studyIds, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/studies/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, 
     produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch studies by IDs")
@@ -113,7 +113,7 @@ public class StudyController {
     
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/tags", method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get the tags of a study")

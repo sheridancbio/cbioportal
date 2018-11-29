@@ -77,7 +77,7 @@ public class ClinicalAttributeController {
         }
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/clinical-attributes", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get all clinical attributes in the specified study")
@@ -111,7 +111,7 @@ public class ClinicalAttributeController {
         }
     }
 
-    @PreAuthorize("hasPermission(#studyId, 'CancerStudy', 'read')")
+    @PreAuthorize("hasPermission(#studyId, 'CancerStudyId', 'read')")
     @RequestMapping(value = "/studies/{studyId}/clinical-attributes/{clinicalAttributeId}", method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Get specified clinical attribute")
@@ -126,7 +126,7 @@ public class ClinicalAttributeController {
                 HttpStatus.OK);
     }
 
-    @PreAuthorize("hasPermission(#studyIds, 'List<CancerStudyId>', 'read')")
+    @PreAuthorize("hasPermission(#studyIds, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/clinical-attributes/fetch", method = RequestMethod.POST, 
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch clinical attributes")
@@ -148,6 +148,7 @@ public class ClinicalAttributeController {
         }
     }
 
+//TODO: replace this with attribute
     @PreAuthorize("hasPermission(#clinicalAttributeCountFilter, 'ClinicalAttributeCountFilter', 'read')")
     @RequestMapping(value = "/clinical-attributes/counts/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
                     produces = MediaType.APPLICATION_JSON_VALUE)

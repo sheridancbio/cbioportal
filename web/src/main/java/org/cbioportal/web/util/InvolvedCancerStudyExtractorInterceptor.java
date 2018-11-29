@@ -17,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
-    UniqueKeyExtractor uniqueKeyExtractor;
+    private UniqueKeyExtractor uniqueKeyExtractor;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
-    public static final String PATIENT_FETCH_PATH = "/patients/fetch";
+    public static final String PATIENT_FETCH_PATH = ".patients.fetch";
 
     @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (!request.getMethod().equals("POST")) {
@@ -56,14 +56,15 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
     }
 
     private Collection<String> extractCancerStudyIdsFromPatientFilter(PatientFilter patientFilter) {
-        List<String> studyIds = new ArrayList<String>();
+        // use hashset as the study list in the patientFilter will usually be populated with many duplicate values
+        Set<String> studyIdSet = new HashSet<String>();
         if (patientFilter.getPatientIdentifiers() != null) {
             for (PatientIdentifier patientIdentifier : patientFilter.getPatientIdentifiers()) {
-                studyIds.add(patientIdentifier.getStudyId());
+                studyIdSet.add(patientIdentifier.getStudyId());
             }
         } else {
-            uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIds);
+            uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIdSet);
         }
-        return studyIds;
+        return studyIdSet;
     }
 }
