@@ -96,9 +96,11 @@ public class PatientController {
     @ApiOperation("Fetch patients by ID")
     public ResponseEntity<List<Patient>> fetchPatients(
         @ApiIgnore
-        @RequestAttribute(required = false) String involvedCancerStudies,
+        @RequestAttribute(required = false, value = "involvedCancerStudies") String involvedCancerStudies,
+        @ApiIgnore
+        @RequestAttribute(required = false, value = "interceptedPatientFilter") PatientFilter interceptedPatientFilter,
         @ApiParam(required = true, value = "List of patient identifiers")
-        @Valid @RequestBody PatientFilter patientFilter,
+        @Valid @RequestBody(required=false) PatientFilter patientFilter,
         @ApiParam("Level of detail of the response")
         @RequestParam(defaultValue = "SUMMARY") Projection projection) {
 
@@ -107,19 +109,19 @@ public class PatientController {
 
         if (projection == Projection.META) {
             HttpHeaders responseHeaders = new HttpHeaders();
-            if (patientFilter.getPatientIdentifiers() != null) {
-                extractStudyAndPatientIds(patientFilter, studyIds, patientIds);
+            if (interceptedPatientFilter.getPatientIdentifiers() != null) {
+                extractStudyAndPatientIds(interceptedPatientFilter, studyIds, patientIds);
             } else {
-                uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIds, patientIds);
+                uniqueKeyExtractor.extractUniqueKeys(interceptedPatientFilter.getUniquePatientKeys(), studyIds, patientIds);
             }
             responseHeaders.add(HeaderKeyConstants.TOTAL_COUNT, patientService.fetchMetaPatients(studyIds, patientIds)
                 .getTotalCount().toString());
             return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
         } else {
-            if (patientFilter.getPatientIdentifiers() != null) {
-                extractStudyAndPatientIds(patientFilter, studyIds, patientIds);
+            if (interceptedPatientFilter.getPatientIdentifiers() != null) {
+                extractStudyAndPatientIds(interceptedPatientFilter, studyIds, patientIds);
             } else {
-                uniqueKeyExtractor.extractUniqueKeys(patientFilter.getUniquePatientKeys(), studyIds, patientIds);
+                uniqueKeyExtractor.extractUniqueKeys(interceptedPatientFilter.getUniquePatientKeys(), studyIds, patientIds);
             }
             return new ResponseEntity<>(
                 patientService.fetchPatients(studyIds, patientIds, projection.name()), HttpStatus.OK);

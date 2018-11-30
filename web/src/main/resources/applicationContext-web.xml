@@ -67,5 +67,6 @@
     <mvc:interceptors>
         <bean id="involvedCancerStudyInterceptor" class="org.cbioportal.web.util.InvolvedCancerStudyExtractorInterceptor"/>
     </mvc:interceptors>
+    <bean class="com.fasterxml.jackson.databind.ObjectMapper"/>
 
 </beans>
