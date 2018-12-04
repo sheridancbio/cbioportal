@@ -89,7 +89,6 @@ public class PatientController {
         return new ResponseEntity<>(patientService.getPatientInStudy(studyId, patientId), HttpStatus.OK);
     }
 
-    //TODO: this should be a list of cancer studies, computed from the PatientFilter argument. Rename it to something appropriate.
     @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/patients/fetch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE)
