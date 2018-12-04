@@ -23,7 +23,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
     private ObjectMapper objectMapper;
 
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
-    public static final String PATIENT_FETCH_PATH = ".patients.fetch";
+    public static final String PATIENT_FETCH_PATH = "/patients/fetch";
 
     @Override public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (!request.getMethod().equals("POST")) {

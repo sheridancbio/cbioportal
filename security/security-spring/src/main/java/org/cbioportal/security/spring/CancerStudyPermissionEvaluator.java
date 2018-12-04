@@ -87,6 +87,9 @@ class CancerStudyPermissionEvaluator implements PermissionEvaluator {
     private String APP_NAME;
     private String DEFAULT_APP_NAME = "public_portal";
 
+    private static final int REPOSITORY_RESULT_LIMIT = Integer.MAX_VALUE; // retrieve all entries (no limit to return size)
+    private static final int REPOSITORY_RESULT_OFFSET = 0; // retrieve all entries (do not skip any)
+
     @Value("${filter_groups_by_appname:true}")
     private String FILTER_GROUPS_BY_APP_NAME;
 
@@ -117,8 +120,8 @@ class CancerStudyPermissionEvaluator implements PermissionEvaluator {
     private void populateMolecularProfileMap() {
         for (MolecularProfile mp : molecularProfileRepository.getAllMolecularProfiles(
                 "SUMMARY",
-                1,//PagingConstants.MAX_PAGE_SIZE,
-                1,//PagingConstants.MIN_PAGE_NUMBER,
+                REPOSITORY_RESULT_LIMIT,
+                REPOSITORY_RESULT_OFFSET,
                 null,
                 "ASC")) {
             molecularProfileCache.put(mp.getStableId(), mp);
@@ -128,8 +131,8 @@ class CancerStudyPermissionEvaluator implements PermissionEvaluator {
     private void populateSampleListMap() {
         for (SampleList sl : sampleListRepository.getAllSampleLists(
                 "SUMMARY",
-                1,//PagingConstants.MAX_PAGE_SIZE,
-                1,//PagingConstants.MIN_PAGE_NUMBER,
+                REPOSITORY_RESULT_LIMIT,
+                REPOSITORY_RESULT_OFFSET,
                 null,
                 "ASC")) {
             sampleListCache.put(sl.getStableId(), sl);
@@ -139,8 +142,8 @@ class CancerStudyPermissionEvaluator implements PermissionEvaluator {
     private void populateCancerStudyMap() {
         for (CancerStudy cs : studyRepository.getAllStudies(
                 "SUMMARY",
-                1,//PagingConstants.MAX_PAGE_SIZE,
-                1,//PagingConstants.MIN_PAGE_NUMBER,
+                REPOSITORY_RESULT_LIMIT,
+                REPOSITORY_RESULT_OFFSET,
                 null,
                 "ASC")) {
             cancerStudyCache.put(cs.getCancerStudyIdentifier(), cs);
@@ -434,14 +437,6 @@ class CancerStudyPermissionEvaluator implements PermissionEvaluator {
         return FILTER_GROUPS_BY_APP_NAME == null || Boolean.parseBoolean(FILTER_GROUPS_BY_APP_NAME);
     }
 }
-
-//TODO: delete this
-class UniqueKeyExtractor {
-    public void extractUniqueKeys(List<String> uniqueKeys, Collection<String> studyIdsToReturn) {
-    }
-}
-
-
 
 //CODE FROM INDIRECT has_permission() call
 /*        } else if ("ClinicalAttributeCountFilter".equals(targetType)) {
