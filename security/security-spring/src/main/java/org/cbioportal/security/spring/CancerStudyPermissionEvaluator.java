@@ -36,7 +36,6 @@ import java.io.Serializable;
 import java.util.*;
 import org.apache.commons.logging.*;
 import org.cbioportal.model.*;
-import org.cbioportal.persistence.*;
 import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.security.access.PermissionEvaluator;
@@ -375,52 +374,3 @@ class CancerStudyPermissionEvaluator implements PermissionEvaluator {
         return FILTER_GROUPS_BY_APP_NAME == null || Boolean.parseBoolean(FILTER_GROUPS_BY_APP_NAME);
     }
 }
-
-//CODE FROM INDIRECT has_permission() call
-/*
-        } else if ("ClinicalDataMultiStudyFilter".equals(targetType)) {
-            return hasAccessToCancerStudies(authentication, (ClinicalDataMultiStudyFilter)targetId, permission);
-        } else if ("GenePanelMultipleStudyFilter".equals(targetType)) {
-            GenePanelMultipleStudyFilter genePanelMultipleStudyFilter = (GenePanelMultipleStudyFilter)targetId;
-            return hasAccessToCancerStudiesBySampleMolecularIdentifier(authentication, genePanelMultipleStudyFilter.getSampleMolecularIdentifiers(), permission);
-        } else if ("MolecularDataMultipleStudyFilter".equals(targetType)) {
-            MolecularDataMultipleStudyFilter molecularDataMultipleStudyFilter = (MolecularDataMultipleStudyFilter)targetId;
-            if (molecularDataMultipleStudyFilter.getMolecularProfileIds() != null) {
-                return hasAccessToMolecularProfiles(authentication, molecularDataMultipleStudyFilter.getMolecularProfileIds(), permission);
-            } else {
-                return hasAccessToCancerStudiesBySampleMolecularIdentifier(authentication, molecularDataMultipleStudyFilter.getSampleMolecularIdentifiers(), permission);
-            }
-        } else if ("MutationMultipleStudyFilter".equals(targetType)) {
-            MutationMultipleStudyFilter mutationMultipleStudyFilter = (MutationMultipleStudyFilter)targetId;
-            if (mutationMultipleStudyFilter.getMolecularProfileIds() != null) {
-                return hasAccessToMolecularProfiles(authentication, mutationMultipleStudyFilter.getMolecularProfileIds(), permission);
-            } else {
-                return hasAccessToCancerStudiesBySampleMolecularIdentifier(authentication, mutationMultipleStudyFilter.getSampleMolecularIdentifiers(), permission);
-            }
-        } else if ("Collection<SampleIdentifier>".equals(targetType)) {
-            return hasAccessToCancerStudiesBySampleIdentifier(authentication, (Collection<SampleIdentifier>)targetId, permission);
-*/
-
-
-
-//HELPER FUNCTIONS
-/*
-    private boolean hasAccessToCancerStudiesBySampleMolecularIdentifier(Authentication authentication, Collection<SampleMolecularIdentifier> sampleMolecularIdentifiers, Object permission) {
-        // use hashset as this list can be populated with many duplicate values
-        Set<String> molecularProfileIds = new HashSet<String>();
-        for (SampleMolecularIdentifier sampleMolecularIdentifier : sampleMolecularIdentifiers) {
-            molecularProfileIds.add(sampleMolecularIdentifier.getMolecularProfileId());
-        }
-        return hasAccessToMolecularProfiles(authentication, molecularProfileIds, permission);
-    }
-
-    private boolean hasAccessToCancerStudies(Authentication authentication, ClinicalDataMultiStudyFilter clinicalDataMultiStudyFilter, Object permission) {
-        // use hashset as this list can be populated with many duplicate values
-        Set<String> studyIds = new HashSet<String>();
-        for (ClinicalDataIdentifier identifier : clinicalDataMultiStudyFilter.getIdentifiers()) {
-            studyIds.add(identifier.getStudyId());
-        }
-        return hasAccessToCancerStudies(authentication, studyIds, permission);
-    }
-
-*/

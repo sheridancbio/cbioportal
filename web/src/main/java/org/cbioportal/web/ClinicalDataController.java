@@ -25,18 +25,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.access.prepost.PreAuthorize;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @PublicApi
 @RestController
@@ -73,7 +74,7 @@ public class ClinicalDataController {
         @ApiParam("Name of the property that the result list is sorted by")
         @RequestParam(required = false) ClinicalDataSortBy sortBy,
         @ApiParam("Direction of the sort")
-        @RequestParam(defaultValue = "ASC") Direction direction) throws SampleNotFoundException, 
+        @RequestParam(defaultValue = "ASC") Direction direction) throws SampleNotFoundException,
         StudyNotFoundException {
 
         if (projection == Projection.META) {
@@ -112,7 +113,7 @@ public class ClinicalDataController {
         @ApiParam("Name of the property that the result list is sorted by")
         @RequestParam(required = false) ClinicalDataSortBy sortBy,
         @ApiParam("Direction of the sort")
-        @RequestParam(defaultValue = "ASC") Direction direction) throws PatientNotFoundException, 
+        @RequestParam(defaultValue = "ASC") Direction direction) throws PatientNotFoundException,
         StudyNotFoundException {
 
         if (projection == Projection.META) {
@@ -161,7 +162,7 @@ public class ClinicalDataController {
         } else {
             return new ResponseEntity<>(
                 clinicalDataService.getAllClinicalDataInStudy(studyId, attributeId,
-                    clinicalDataType.name(), projection.name(), pageSize, pageNumber, 
+                    clinicalDataType.name(), projection.name(), pageSize, pageNumber,
                     sortBy == null ? null : sortBy.getOriginalValue(), direction.name()), HttpStatus.OK);
         }
     }
@@ -183,34 +184,37 @@ public class ClinicalDataController {
         if (projection == Projection.META) {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.add(HeaderKeyConstants.TOTAL_COUNT, clinicalDataService.fetchMetaClinicalDataInStudy(
-                studyId, clinicalDataSingleStudyFilter.getIds(), clinicalDataSingleStudyFilter.getAttributeIds(), 
+                studyId, clinicalDataSingleStudyFilter.getIds(), clinicalDataSingleStudyFilter.getAttributeIds(),
                 clinicalDataType.name()).getTotalCount().toString());
             return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(
-                clinicalDataService.fetchAllClinicalDataInStudy(studyId, clinicalDataSingleStudyFilter.getIds(), 
-                    clinicalDataSingleStudyFilter.getAttributeIds(), clinicalDataType.name(), projection.name()), 
+                clinicalDataService.fetchAllClinicalDataInStudy(studyId, clinicalDataSingleStudyFilter.getIds(),
+                    clinicalDataSingleStudyFilter.getAttributeIds(), clinicalDataType.name(), projection.name()),
                 HttpStatus.OK);
         }
     }
 
-//TODO: replace this with attribute
-    @PreAuthorize("hasPermission(#clinicalDataMultiStudyFilter, 'ClinicalDataMultiStudyFilter', 'read')")
+    @PreAuthorize("hasPermission(#involvedCancerStudies, 'Collection<CancerStudyId>', 'read')")
     @RequestMapping(value = "/clinical-data/fetch", method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch clinical data by patient IDs or sample IDs (all studies)")
     public ResponseEntity<List<ClinicalData>> fetchClinicalData(
+        @ApiIgnore // prevent reference to this attribute in the swagger-ui interface
+        @RequestAttribute(required = false, value = "involvedCancerStudies") Collection<String> involvedCancerStudies,
+        @ApiIgnore // prevent reference to this attribute in the swagger-ui interface. this attribute is needed for the @PreAuthorize tag above.
+        @RequestAttribute(required = false, value = "interceptedClinicalDataMultiStudyFilter") ClinicalDataMultiStudyFilter interceptedClinicalDataMultiStudyFilter,
         @ApiParam("Type of the clinical data")
         @RequestParam(defaultValue = "SAMPLE") ClinicalDataType clinicalDataType,
         @ApiParam(required = true, value = "List of patient or sample identifiers and attribute IDs")
-        @Valid @RequestBody ClinicalDataMultiStudyFilter clinicalDataMultiStudyFilter,
+        @Valid @RequestBody(required = false) ClinicalDataMultiStudyFilter clinicalDataMultiStudyFilter,
         @ApiParam("Level of detail of the response")
         @RequestParam(defaultValue = "SUMMARY") Projection projection) {
 
         List<String> studyIds = new ArrayList<>();
         List<String> ids = new ArrayList<>();
 
-        for (ClinicalDataIdentifier identifier : clinicalDataMultiStudyFilter.getIdentifiers()) {
+        for (ClinicalDataIdentifier identifier : interceptedClinicalDataMultiStudyFilter.getIdentifiers()) {
             studyIds.add(identifier.getStudyId());
             ids.add(identifier.getEntityId());
         }
@@ -218,11 +222,11 @@ public class ClinicalDataController {
         if (projection == Projection.META) {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.add(HeaderKeyConstants.TOTAL_COUNT, clinicalDataService.fetchMetaClinicalData(studyIds, ids,
-                clinicalDataMultiStudyFilter.getAttributeIds(), clinicalDataType.name()).getTotalCount().toString());
+                interceptedClinicalDataMultiStudyFilter.getAttributeIds(), clinicalDataType.name()).getTotalCount().toString());
             return new ResponseEntity<>(responseHeaders, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(
-                clinicalDataService.fetchClinicalData(studyIds, ids, clinicalDataMultiStudyFilter.getAttributeIds(), 
+                clinicalDataService.fetchClinicalData(studyIds, ids, interceptedClinicalDataMultiStudyFilter.getAttributeIds(),
                     clinicalDataType.name(), projection.name()), HttpStatus.OK);
         }
     }
