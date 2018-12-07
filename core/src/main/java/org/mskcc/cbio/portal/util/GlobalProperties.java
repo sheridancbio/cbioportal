@@ -72,9 +72,6 @@ public class GlobalProperties {
     private static String authenticate;
     @Value("${authenticate:false}") // default is false
     public void setAuthenticate(String property) { authenticate = property; }
-    private static String authorization;
-    @Value("${authorization:false}") // default is false
-    public void setAuthorization(String property) { authorization = property; }
     public static final String FILTER_GROUPS_BY_APPNAME = "filter_groups_by_appname";
     public static final String INCLUDE_NETWORKS = "include_networks";
     public static final String GOOGLE_ANALYTICS_PROFILE_ID = "google_analytics_profile_id";
@@ -481,9 +478,6 @@ public class GlobalProperties {
             return "anonymousUser";
         }
     }
-	public static boolean usersMustBeAuthorized() {
-        return Boolean.parseBoolean(authorization);
-	}
 
     public static String getAppName()
     {
