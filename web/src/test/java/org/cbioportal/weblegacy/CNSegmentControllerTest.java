@@ -32,6 +32,7 @@
 
 package org.cbioportal.weblegacy;
 
+import org.cbioportal.web.config.CacheMapUtilConfig;
 import java.util.ArrayList;
 import java.util.List;
 import org.mskcc.cbio.portal.model.CNSegmentData;
@@ -55,7 +56,7 @@ import org.mskcc.cbio.portal.service.CNSegmentService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {CNSegmentControllerConfig.class, CustomObjectMapper.class})
+@ContextConfiguration(classes = {CNSegmentControllerConfig.class, CustomObjectMapper.class, CacheMapUtilConfig.class})
 public class CNSegmentControllerTest {
     @Autowired
     private WebApplicationContext webApplicationContext;

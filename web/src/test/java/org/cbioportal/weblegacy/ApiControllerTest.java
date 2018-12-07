@@ -32,6 +32,7 @@
 
 package org.cbioportal.weblegacy;
 
+import org.cbioportal.web.config.CacheMapUtilConfig;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang.SerializationUtils;
@@ -70,7 +71,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {ApiControllerConfig.class, CustomObjectMapper.class})
+@ContextConfiguration(classes = {ApiControllerConfig.class, CustomObjectMapper.class, CacheMapUtilConfig.class})
 public class ApiControllerTest {
     @Autowired
     private CancerTypeMapperLegacy cancerTypeMapperLegacyMock;

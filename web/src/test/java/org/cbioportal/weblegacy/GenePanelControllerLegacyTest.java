@@ -31,6 +31,7 @@
 */
 package org.cbioportal.weblegacy;
 
+import org.cbioportal.web.config.CacheMapUtilConfig;
 import java.util.ArrayList;
 import java.util.List;
 import org.cbioportal.model.*;
@@ -61,7 +62,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {GenePanelControllerLegacyConfig.class, CustomObjectMapper.class})
+@ContextConfiguration(classes = {GenePanelControllerLegacyConfig.class, CustomObjectMapper.class, CacheMapUtilConfig.class})
 public class GenePanelControllerLegacyTest {
     @Autowired
     private WebApplicationContext webApplicationContext;

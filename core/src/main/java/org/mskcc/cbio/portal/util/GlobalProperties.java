@@ -453,6 +453,7 @@ public class GlobalProperties {
 		return (studies.length > 0) ? Arrays.asList(studies) : Collections.<String>emptyList();
 	}
 
+    // CHANGES TO THIS LIST MUST BE PROPAGATED TO 'CacheMapUtil'
     public static boolean usersMustAuthenticate()
     {
         // authentication for social_auth is optional

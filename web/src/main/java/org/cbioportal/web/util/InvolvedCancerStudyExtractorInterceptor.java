@@ -38,9 +38,6 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
     @Autowired
     private CacheMapUtil cacheMapUtil;
 
-    @Value("${authorization:false}")
-    private Boolean AUTHORIZATION;
-
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
     public static final String PATIENT_FETCH_PATH = "/patients/fetch";
     public static final String SAMPLE_FETCH_PATH = "/samples/fetch";
@@ -86,7 +83,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted patientFilter: " + patientFilter.toString());
             LOG.debug("setting interceptedPatientFilter to " + patientFilter);
             request.setAttribute("interceptedPatientFilter", patientFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromPatientFilter(patientFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -117,7 +114,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted sampleFilter: " + sampleFilter.toString());
             LOG.debug("setting interceptedSampleFilter to " + sampleFilter);
             request.setAttribute("interceptedSampleFilter", sampleFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromSampleFilter(sampleFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -148,7 +145,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted molecularProfileFilter: " + molecularProfileFilter.toString());
             LOG.debug("setting interceptedMolecularProfileFilter to " + molecularProfileFilter);
             request.setAttribute("interceptedMolecularProfileFilter", molecularProfileFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMolecularProfileFilter(molecularProfileFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -177,7 +174,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted clinicalAttributeCountFilter: " + clinicalAttributeCountFilter.toString());
             LOG.debug("setting interceptedClinicalAttributeCountFilter to " + clinicalAttributeCountFilter);
             request.setAttribute("interceptedClinicalAttributeCountFilter", clinicalAttributeCountFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromClinicalAttributeCountFilter(clinicalAttributeCountFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -206,7 +203,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted clinicalDataMultiStudyFilter: " + clinicalDataMultiStudyFilter.toString());
             LOG.debug("setting interceptedClinicalDataMultiStudyFilter to " + clinicalDataMultiStudyFilter);
             request.setAttribute("interceptedClinicalDataMultiStudyFilter", clinicalDataMultiStudyFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromClinicalDataMultiStudyFilter(clinicalDataMultiStudyFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -233,7 +230,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted genePanelMultipleStudyFilter: " + genePanelMultipleStudyFilter.toString());
             LOG.debug("setting interceptedGenePanelMultipleStudyFilter to " + genePanelMultipleStudyFilter);
             request.setAttribute("interceptedGenePanelMultipleStudyFilter", genePanelMultipleStudyFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromGenePanelMultipleStudyFilter(genePanelMultipleStudyFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -257,7 +254,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted molecularDataMultipleStudyFilter: " + molecularDataMultipleStudyFilter.toString());
             LOG.debug("setting interceptedMolecularDataMultipleStudyFilter to " + molecularDataMultipleStudyFilter);
             request.setAttribute("interceptedMolecularDataMultipleStudyFilter", molecularDataMultipleStudyFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMolecularDataMultipleStudyFilter(molecularDataMultipleStudyFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -285,7 +282,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted mutationMultipleStudyFilter: " + mutationMultipleStudyFilter.toString());
             LOG.debug("setting interceptedMutationMultipleStudyFilter to " + mutationMultipleStudyFilter);
             request.setAttribute("interceptedMutationMultipleStudyFilter", mutationMultipleStudyFilter);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMutationMultipleStudyFilter(mutationMultipleStudyFilter);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
@@ -313,7 +310,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
             LOG.debug("extracted sampleIdentifiers: " + sampleIdentifiers.toString());
             LOG.debug("setting interceptedSampleIdentifiers to " + sampleIdentifiers);
             request.setAttribute("interceptedSampleIdentifiers", sampleIdentifiers);
-            if (AUTHORIZATION) {
+            if (cacheMapUtil.hasCacheEnabled()) {
                 Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromSampleIdentifiers(sampleIdentifiers);
                 LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
                 request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);

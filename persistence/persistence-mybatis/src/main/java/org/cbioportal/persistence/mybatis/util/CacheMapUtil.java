@@ -62,9 +62,10 @@ public class CacheMapUtil {
     @Autowired
     private SampleListRepository sampleListRepository;
 
-    @Value("${authorization:false}")
-    private Boolean AUTHORIZATION;
+    @Value("${authenticate:false}")
+    private String authenticate;
 
+    private Boolean cacheEnabled;
     private static final Logger LOG = LoggerFactory.getLogger(CacheMapUtil.class);
 
     private static final int REPOSITORY_RESULT_LIMIT = Integer.MAX_VALUE; // retrieve all entries (no limit to return size)
@@ -89,7 +90,11 @@ public class CacheMapUtil {
 
     @PostConstruct
     private void initializeCacheMemory() {
-        if (AUTHORIZATION) {
+        // CHANGES TO THIS LIST MUST BE PROPAGATED TO 'GlobalProperties'
+        this.cacheEnabled = (!authenticate.isEmpty() 
+                && !authenticate.equals("false") 
+                && !authenticate.equals("social_auth"));
+        if (cacheEnabled) {
             LOG.debug("creating cache maps for authorization");
             populateMolecularProfileMap();
             populateSampleListMap();
@@ -132,6 +137,20 @@ public class CacheMapUtil {
             cancerStudyCache.put(cs.getCancerStudyIdentifier(), cs);
         }
         LOG.debug("  cancer study map size: " + cancerStudyCache.size());
+    }
+
+    /**
+     * @return the cacheEnabled
+     */
+    public Boolean hasCacheEnabled() {
+        return cacheEnabled;
+    }
+
+    /**
+     * @param cacheEnabled the cacheEnabled to set
+     */
+    public void setCacheEnabled(Boolean cacheEnabled) {
+        this.cacheEnabled = cacheEnabled;
     }
 
 }

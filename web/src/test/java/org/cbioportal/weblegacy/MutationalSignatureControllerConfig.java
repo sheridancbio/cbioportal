@@ -32,12 +32,6 @@
 package org.cbioportal.weblegacy;
 
 import java.util.List;
-import org.cbioportal.persistence.CancerTypeRepository;
-import org.cbioportal.persistence.MolecularProfileRepository;
-import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
-import org.cbioportal.persistence.PatientRepository;
-import org.cbioportal.persistence.SampleListRepository;
-import org.cbioportal.persistence.StudyRepository;
 import org.cbioportal.web.config.CustomObjectMapper;
 import org.mockito.Mockito;
 import org.mskcc.cbio.portal.service.MutationalSignatureService;
@@ -62,29 +56,5 @@ public class MutationalSignatureControllerConfig extends WebMvcConfigurerAdapter
     @Bean
     public MutationalSignatureService mutationalSignatureService() {
         return Mockito.mock(MutationalSignatureService.class);
-    }
-    @Bean
-    public CacheMapUtil cacheMapUtil() {
-        return Mockito.mock(CacheMapUtil.class);
-    }
-    @Bean
-    public PatientRepository patientRepository() {
-        return Mockito.mock(PatientRepository.class);
-    }
-    @Bean
-    public CancerTypeRepository cancerTypeRepository() {
-        return Mockito.mock(CancerTypeRepository.class);
-    }
-    @Bean
-    public StudyRepository studyRepository() {
-        return Mockito.mock(StudyRepository.class);
-    }
-    @Bean
-    public MolecularProfileRepository molecularProfileRepository() {
-        return Mockito.mock(MolecularProfileRepository.class);
-    }
-    @Bean
-    public SampleListRepository sampleListRepository() {
-        return Mockito.mock(SampleListRepository.class);
     }
 }
