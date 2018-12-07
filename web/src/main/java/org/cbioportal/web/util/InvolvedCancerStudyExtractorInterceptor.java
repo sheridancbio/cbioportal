@@ -4,24 +4,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cbioportal.model.SampleList;
 import org.cbioportal.model.MolecularProfile;
+import org.cbioportal.model.SampleList;
 import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
 import org.cbioportal.web.parameter.ClinicalAttributeCountFilter;
 import org.cbioportal.web.parameter.ClinicalDataIdentifier;
 import org.cbioportal.web.parameter.ClinicalDataMultiStudyFilter;
 import org.cbioportal.web.parameter.GenePanelMultipleStudyFilter;
 import org.cbioportal.web.parameter.MolecularDataMultipleStudyFilter;
+import org.cbioportal.web.parameter.MolecularProfileFilter;
+import org.cbioportal.web.parameter.MutationMultipleStudyFilter;
 import org.cbioportal.web.parameter.PatientFilter;
 import org.cbioportal.web.parameter.PatientIdentifier;
 import org.cbioportal.web.parameter.SampleFilter;
 import org.cbioportal.web.parameter.SampleIdentifier;
-import org.cbioportal.web.parameter.MolecularProfileFilter;
-import org.cbioportal.web.parameter.MutationMultipleStudyFilter;
 import org.cbioportal.web.parameter.SampleMolecularIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -36,6 +37,9 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
 
     @Autowired
     private CacheMapUtil cacheMapUtil;
+
+    @Value("${authorization:false}")
+    private Boolean AUTHORIZATION;
 
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
     public static final String PATIENT_FETCH_PATH = "/patients/fetch";
@@ -80,61 +84,15 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         try {
             PatientFilter patientFilter = objectMapper.readValue(request.getReader(), PatientFilter.class);
             LOG.debug("extracted patientFilter: " + patientFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromPatientFilter(patientFilter);
             LOG.debug("setting interceptedPatientFilter to " + patientFilter);
             request.setAttribute("interceptedPatientFilter", patientFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromPatientFilter(patientFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of patientFilter: " + e);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean extractAttributesFromSampleFilter(HttpServletRequest request) {
-        try {
-            SampleFilter sampleFilter = objectMapper.readValue(request.getReader(), SampleFilter.class);
-            LOG.debug("extracted sampleFilter: " + sampleFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromSampleFilter(sampleFilter);
-            LOG.debug("setting interceptedSampleFilter to " + sampleFilter);
-            request.setAttribute("interceptedSampleFilter", sampleFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
-        } catch (Exception e) {
-            LOG.error("exception thrown during extraction of sampleFilter: " + e);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean extractAttributesFromMolecularProfileFilter(HttpServletRequest request) {
-        try {
-            MolecularProfileFilter molecularProfileFilter = objectMapper.readValue(request.getReader(), MolecularProfileFilter.class);
-            LOG.debug("extracted molecularProfileFilter: " + molecularProfileFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMolecularProfileFilter(molecularProfileFilter);
-            LOG.debug("setting interceptedMolecularProfileFilter to " + molecularProfileFilter);
-            request.setAttribute("interceptedMolecularProfileFilter", molecularProfileFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
-        } catch (Exception e) {
-            LOG.error("exception thrown during extraction of molecularProfileFilter: " + e);
-            return false;
-        }
-        return true;
-    }
-
-    private boolean extractAttributesFromClinicalAttributeCountFilter(HttpServletRequest request) {
-        try {
-            ClinicalAttributeCountFilter clinicalAttributeCountFilter = objectMapper.readValue(request.getReader(), ClinicalAttributeCountFilter.class);
-            LOG.debug("extracted clinicalAttributeCountFilter: " + clinicalAttributeCountFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromClinicalAttributeCountFilter(clinicalAttributeCountFilter);
-            LOG.debug("setting interceptedClinicalAttributeCountFilter to " + clinicalAttributeCountFilter);
-            request.setAttribute("interceptedClinicalAttributeCountFilter", clinicalAttributeCountFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
-        } catch (Exception e) {
-            LOG.error("exception thrown during extraction of clinicalAttributeCountFilter: " + e);
             return false;
         }
         return true;
@@ -153,6 +111,24 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         return studyIdSet;
     }
 
+    private boolean extractAttributesFromSampleFilter(HttpServletRequest request) {
+        try {
+            SampleFilter sampleFilter = objectMapper.readValue(request.getReader(), SampleFilter.class);
+            LOG.debug("extracted sampleFilter: " + sampleFilter.toString());
+            LOG.debug("setting interceptedSampleFilter to " + sampleFilter);
+            request.setAttribute("interceptedSampleFilter", sampleFilter);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromSampleFilter(sampleFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
+        } catch (Exception e) {
+            LOG.error("exception thrown during extraction of sampleFilter: " + e);
+            return false;
+        }
+        return true;
+    }
+
     private Collection<String> extractCancerStudyIdsFromSampleFilter(SampleFilter sampleFilter) {
         // use hashset as the study list in the sampleFilter will usually be populated with many duplicate values
         Set<String> studyIdSet = new HashSet<String>();
@@ -166,23 +142,22 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         return studyIdSet;
     }
 
-    private void extractCancerStudyIdsFromSampleIdentifiers(Collection<SampleIdentifier> sampleIdentifiers, Set<String> studyIdSet) {
-        for (SampleIdentifier sampleIdentifier : sampleIdentifiers) {
-            studyIdSet.add(sampleIdentifier.getStudyId());
+    private boolean extractAttributesFromMolecularProfileFilter(HttpServletRequest request) {
+        try {
+            MolecularProfileFilter molecularProfileFilter = objectMapper.readValue(request.getReader(), MolecularProfileFilter.class);
+            LOG.debug("extracted molecularProfileFilter: " + molecularProfileFilter.toString());
+            LOG.debug("setting interceptedMolecularProfileFilter to " + molecularProfileFilter);
+            request.setAttribute("interceptedMolecularProfileFilter", molecularProfileFilter);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMolecularProfileFilter(molecularProfileFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
+        } catch (Exception e) {
+            LOG.error("exception thrown during extraction of molecularProfileFilter: " + e);
+            return false;
         }
-    }
-
-    private Set<String> extractCancerStudyIdsFromSampleIdentifiers(Collection<SampleIdentifier> sampleIdentifiers) {
-        Set<String> studyIdSet = new HashSet<String>();
-        extractCancerStudyIdsFromSampleIdentifiers(sampleIdentifiers, studyIdSet);
-        return studyIdSet;
-    }
-
-    private void extractCancerStudyIdsFromSampleListIds(List<String> sampleListIds, Set<String> studyIdSet) {
-        for (String sampleListId : sampleListIds) {
-            SampleList sampleList = cacheMapUtil.getSampleListMap().get(sampleListId);
-            studyIdSet.add(sampleList.getCancerStudyIdentifier());
-        }
+        return true;
     }
 
     private Collection<String> extractCancerStudyIdsFromMolecularProfileFilter(MolecularProfileFilter molecularProfileFilter) {
@@ -196,11 +171,22 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         return studyIdSet;
     }
 
-    private void extractCancerStudyIdsFromMolecularProfileIds(Collection<String> molecularProfileIds, Set<String> studyIdSet) {
-        for (String molecularProfileId : molecularProfileIds) {
-            MolecularProfile molecularProfile = cacheMapUtil.getMolecularProfileMap().get(molecularProfileId);
-            studyIdSet.add(molecularProfile.getCancerStudyIdentifier());
+    private boolean extractAttributesFromClinicalAttributeCountFilter(HttpServletRequest request) {
+        try {
+            ClinicalAttributeCountFilter clinicalAttributeCountFilter = objectMapper.readValue(request.getReader(), ClinicalAttributeCountFilter.class);
+            LOG.debug("extracted clinicalAttributeCountFilter: " + clinicalAttributeCountFilter.toString());
+            LOG.debug("setting interceptedClinicalAttributeCountFilter to " + clinicalAttributeCountFilter);
+            request.setAttribute("interceptedClinicalAttributeCountFilter", clinicalAttributeCountFilter);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromClinicalAttributeCountFilter(clinicalAttributeCountFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
+        } catch (Exception e) {
+            LOG.error("exception thrown during extraction of clinicalAttributeCountFilter: " + e);
+            return false;
         }
+        return true;
     }
 
     private Collection<String> extractCancerStudyIdsFromClinicalAttributeCountFilter(ClinicalAttributeCountFilter clinicalAttributeCountFilter) {
@@ -218,11 +204,13 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         try {
             ClinicalDataMultiStudyFilter clinicalDataMultiStudyFilter = objectMapper.readValue(request.getReader(), ClinicalDataMultiStudyFilter.class);
             LOG.debug("extracted clinicalDataMultiStudyFilter: " + clinicalDataMultiStudyFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromClinicalDataMultiStudyFilter(clinicalDataMultiStudyFilter);
             LOG.debug("setting interceptedClinicalDataMultiStudyFilter to " + clinicalDataMultiStudyFilter);
             request.setAttribute("interceptedClinicalDataMultiStudyFilter", clinicalDataMultiStudyFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromClinicalDataMultiStudyFilter(clinicalDataMultiStudyFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of clinicalDataMultiStudyFilter: " + e);
             return false;
@@ -243,11 +231,13 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         try {
             GenePanelMultipleStudyFilter genePanelMultipleStudyFilter = objectMapper.readValue(request.getReader(), GenePanelMultipleStudyFilter.class);
             LOG.debug("extracted genePanelMultipleStudyFilter: " + genePanelMultipleStudyFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromGenePanelMultipleStudyFilter(genePanelMultipleStudyFilter);
             LOG.debug("setting interceptedGenePanelMultipleStudyFilter to " + genePanelMultipleStudyFilter);
             request.setAttribute("interceptedGenePanelMultipleStudyFilter", genePanelMultipleStudyFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromGenePanelMultipleStudyFilter(genePanelMultipleStudyFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of genePanelMultipleStudyFilter: " + e);
             return false;
@@ -261,24 +251,17 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         return studyIdSet;
     }
 
-    private void extractCancerStudyIdsFromSampleMolecularIdentifiers(List<SampleMolecularIdentifier> sampleMolecularIdentifiers, Set<String> studyIdSet) {
-        // use hashset as the study list in sampleMolecularIdentifiers may be populated with duplicate values
-        Set<String> molecularProfileIds = new HashSet<String>();
-        for (SampleMolecularIdentifier sampleMolecularIdentifier: sampleMolecularIdentifiers) {
-            molecularProfileIds.add(sampleMolecularIdentifier.getMolecularProfileId());
-        }
-        extractCancerStudyIdsFromMolecularProfileIds(molecularProfileIds, studyIdSet);
-    }
-
     private boolean extractAttributesFromMolecularDataMultipleStudyFilter(HttpServletRequest request) {
         try {
             MolecularDataMultipleStudyFilter molecularDataMultipleStudyFilter = objectMapper.readValue(request.getReader(), MolecularDataMultipleStudyFilter.class);
             LOG.debug("extracted molecularDataMultipleStudyFilter: " + molecularDataMultipleStudyFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMolecularDataMultipleStudyFilter(molecularDataMultipleStudyFilter);
             LOG.debug("setting interceptedMolecularDataMultipleStudyFilter to " + molecularDataMultipleStudyFilter);
             request.setAttribute("interceptedMolecularDataMultipleStudyFilter", molecularDataMultipleStudyFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMolecularDataMultipleStudyFilter(molecularDataMultipleStudyFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of molecularDataMultipleStudyFilter: " + e);
             return false;
@@ -300,11 +283,13 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         try {
             MutationMultipleStudyFilter mutationMultipleStudyFilter = objectMapper.readValue(request.getReader(), MutationMultipleStudyFilter.class);
             LOG.debug("extracted mutationMultipleStudyFilter: " + mutationMultipleStudyFilter.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMutationMultipleStudyFilter(mutationMultipleStudyFilter);
             LOG.debug("setting interceptedMutationMultipleStudyFilter to " + mutationMultipleStudyFilter);
             request.setAttribute("interceptedMutationMultipleStudyFilter", mutationMultipleStudyFilter);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromMutationMultipleStudyFilter(mutationMultipleStudyFilter);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of mutationMultipleStudyFilter: " + e);
             return false;
@@ -326,15 +311,53 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         try {
             List<SampleIdentifier> sampleIdentifiers = Arrays.asList(objectMapper.readValue(request.getReader(), SampleIdentifier[].class));
             LOG.debug("extracted sampleIdentifiers: " + sampleIdentifiers.toString());
-            Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromSampleIdentifiers(sampleIdentifiers);
             LOG.debug("setting interceptedSampleIdentifiers to " + sampleIdentifiers);
             request.setAttribute("interceptedSampleIdentifiers", sampleIdentifiers);
-            LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
-            request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            if (AUTHORIZATION) {
+                Collection<String> cancerStudyIdCollection = extractCancerStudyIdsFromSampleIdentifiers(sampleIdentifiers);
+                LOG.debug("setting involvedCancerStudies to " + cancerStudyIdCollection);
+                request.setAttribute("involvedCancerStudies", cancerStudyIdCollection);
+            }
         } catch (Exception e) {
             LOG.error("exception thrown during extraction of sampleIdentifiers: " + e);
             return false;
         }
         return true;
     }
+
+    private Set<String> extractCancerStudyIdsFromSampleIdentifiers(Collection<SampleIdentifier> sampleIdentifiers) {
+        Set<String> studyIdSet = new HashSet<String>();
+        extractCancerStudyIdsFromSampleIdentifiers(sampleIdentifiers, studyIdSet);
+        return studyIdSet;
+    }
+
+    private void extractCancerStudyIdsFromSampleIdentifiers(Collection<SampleIdentifier> sampleIdentifiers, Set<String> studyIdSet) {
+        for (SampleIdentifier sampleIdentifier : sampleIdentifiers) {
+            studyIdSet.add(sampleIdentifier.getStudyId());
+        }
+    }
+
+    private void extractCancerStudyIdsFromSampleListIds(List<String> sampleListIds, Set<String> studyIdSet) {
+        for (String sampleListId : sampleListIds) {
+            SampleList sampleList = cacheMapUtil.getSampleListMap().get(sampleListId);
+            studyIdSet.add(sampleList.getCancerStudyIdentifier());
+        }
+    }
+
+    private void extractCancerStudyIdsFromMolecularProfileIds(Collection<String> molecularProfileIds, Set<String> studyIdSet) {
+        for (String molecularProfileId : molecularProfileIds) {
+            MolecularProfile molecularProfile = cacheMapUtil.getMolecularProfileMap().get(molecularProfileId);
+            studyIdSet.add(molecularProfile.getCancerStudyIdentifier());
+        }
+    }
+
+    private void extractCancerStudyIdsFromSampleMolecularIdentifiers(List<SampleMolecularIdentifier> sampleMolecularIdentifiers, Set<String> studyIdSet) {
+        // use hashset as the study list in sampleMolecularIdentifiers may be populated with duplicate values
+        Set<String> molecularProfileIds = new HashSet<String>();
+        for (SampleMolecularIdentifier sampleMolecularIdentifier: sampleMolecularIdentifiers) {
+            molecularProfileIds.add(sampleMolecularIdentifier.getMolecularProfileId());
+        }
+        extractCancerStudyIdsFromMolecularProfileIds(molecularProfileIds, studyIdSet);
+    }
+
 }

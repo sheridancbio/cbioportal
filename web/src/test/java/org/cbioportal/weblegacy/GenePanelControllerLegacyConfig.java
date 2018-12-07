@@ -36,7 +36,12 @@ package org.cbioportal.weblegacy;
  * @author heinsz
  */
 
+import org.cbioportal.persistence.CancerTypeRepository;
+import org.cbioportal.persistence.MolecularProfileRepository;
 import org.cbioportal.persistence.mybatis.util.CacheMapUtil;
+import org.cbioportal.persistence.PatientRepository;
+import org.cbioportal.persistence.SampleListRepository;
+import org.cbioportal.persistence.StudyRepository;
 import org.mockito.Mockito;
 import org.mskcc.cbio.portal.service.GenePanelServiceLegacy;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +62,26 @@ public class GenePanelControllerLegacyConfig extends WebMvcConfigurerAdapter {
     }
     @Bean
     public CacheMapUtil cacheMapUtil() {
-        return new CacheMapUtil();
+        return Mockito.mock(CacheMapUtil.class);
+    }
+    @Bean
+    public PatientRepository patientRepository() {
+        return Mockito.mock(PatientRepository.class);
+    }
+    @Bean
+    public CancerTypeRepository cancerTypeRepository() {
+        return Mockito.mock(CancerTypeRepository.class);
+    }
+    @Bean
+    public StudyRepository studyRepository() {
+        return Mockito.mock(StudyRepository.class);
+    }
+    @Bean
+    public MolecularProfileRepository molecularProfileRepository() {
+        return Mockito.mock(MolecularProfileRepository.class);
+    }
+    @Bean
+    public SampleListRepository sampleListRepository() {
+        return Mockito.mock(SampleListRepository.class);
     }
 }

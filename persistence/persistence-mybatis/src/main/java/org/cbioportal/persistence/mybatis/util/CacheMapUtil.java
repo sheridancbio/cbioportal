@@ -36,7 +36,10 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import org.cbioportal.model.*;
 import org.cbioportal.persistence.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -58,6 +61,11 @@ public class CacheMapUtil {
 
     @Autowired
     private SampleListRepository sampleListRepository;
+
+    @Value("${authorization:false}")
+    private Boolean AUTHORIZATION;
+
+    private static final Logger LOG = LoggerFactory.getLogger(CacheMapUtil.class);
 
     private static final int REPOSITORY_RESULT_LIMIT = Integer.MAX_VALUE; // retrieve all entries (no limit to return size)
     private static final int REPOSITORY_RESULT_OFFSET = 0; // retrieve all entries (do not skip any)
@@ -81,9 +89,12 @@ public class CacheMapUtil {
 
     @PostConstruct
     private void initializeCacheMemory() {
-        populateMolecularProfileMap();
-        populateSampleListMap();
-        populateCancerStudyMap();
+        if (AUTHORIZATION) {
+            LOG.debug("creating cache maps for authorization");
+            populateMolecularProfileMap();
+            populateSampleListMap();
+            populateCancerStudyMap();
+        }
     }
 
     private void populateMolecularProfileMap() {
@@ -95,6 +106,7 @@ public class CacheMapUtil {
                 "ASC")) {
             molecularProfileCache.put(mp.getStableId(), mp);
         }
+        LOG.debug("  molecular profile map size: " + molecularProfileCache.size());
     }
 
     private void populateSampleListMap() {
@@ -106,6 +118,7 @@ public class CacheMapUtil {
                 "ASC")) {
             sampleListCache.put(sl.getStableId(), sl);
         }
+        LOG.debug("  sample list map size: " + sampleListCache.size());
     }
 
     private void populateCancerStudyMap() {
@@ -118,6 +131,7 @@ public class CacheMapUtil {
                 "ASC")) {
             cancerStudyCache.put(cs.getCancerStudyIdentifier(), cs);
         }
+        LOG.debug("  cancer study map size: " + cancerStudyCache.size());
     }
 
 }
