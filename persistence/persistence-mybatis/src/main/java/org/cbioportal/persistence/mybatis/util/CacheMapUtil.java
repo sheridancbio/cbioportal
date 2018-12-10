@@ -66,6 +66,7 @@ public class CacheMapUtil {
     private String authenticate;
 
     private Boolean cacheEnabled;
+
     private static final Logger LOG = LoggerFactory.getLogger(CacheMapUtil.class);
 
     private static final int REPOSITORY_RESULT_LIMIT = Integer.MAX_VALUE; // retrieve all entries (no limit to return size)

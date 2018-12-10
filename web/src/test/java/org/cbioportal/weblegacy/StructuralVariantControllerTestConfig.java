@@ -30,8 +30,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.cbioportal.weblegacy;
-
 import org.mockito.Mockito;
 import org.mskcc.cbio.portal.service.StructuralVariantService;
 import org.springframework.context.annotation.Bean;

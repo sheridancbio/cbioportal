@@ -59,11 +59,11 @@ public class ApiControllerConfig extends WebMvcConfigurerAdapter {
     
     @Bean
     public CosmicCountService cosmicCountService() {
-	return Mockito.mock(CosmicCountService.class);
+        return Mockito.mock(CosmicCountService.class);
     }
     @Bean
     public CosmicCountMapperLegacy cosmicCountMapper() {
-	return Mockito.mock(CosmicCountMapperLegacy.class);
+        return Mockito.mock(CosmicCountMapperLegacy.class);
     }
     @Bean
     public MutationMapperLegacy mutationMapper() {

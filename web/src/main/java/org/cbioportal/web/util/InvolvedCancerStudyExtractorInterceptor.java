@@ -38,6 +38,9 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
     @Autowired
     private CacheMapUtil cacheMapUtil;
 
+    @Value("${authorization:false}")
+    private Boolean AUTHORIZATION;
+
     private static final Logger LOG = LoggerFactory.getLogger(InvolvedCancerStudyExtractorInterceptor.class);
     public static final String PATIENT_FETCH_PATH = "/patients/fetch";
     public static final String SAMPLE_FETCH_PATH = "/samples/fetch";
