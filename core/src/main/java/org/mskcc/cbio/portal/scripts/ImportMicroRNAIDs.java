@@ -74,8 +74,6 @@ public class ImportMicroRNAIDs {
             }
         }
         
-        removePreviousMicroRNARecord(daoGene, mirnas);
-        
         for (CanonicalGene mirna : mirnas) {
             daoGene.addGene(mirna);
         }       
@@ -101,56 +99,21 @@ public class ImportMicroRNAIDs {
         sb.append(mir.substring(ix+1));
         return sb.toString();
     }
-    
-    /**
-     * 
-     * @param daoGene
-     * @param id
-     * @param mirnas 
-     */
-    private static void removePreviousMicroRNARecord(DaoGeneOptimized daoGene, List<CanonicalGene> mirnas) {
-        for (CanonicalGene mirna : mirnas) {
-            Set<String> aliases = new HashSet<String>();
-            aliases.addAll(mirna.getAliases());
-            for (String mirnaid : mirna.getAliases()) {
-                List<CanonicalGene> pres = new ArrayList<CanonicalGene>(daoGene.guessGene(mirnaid));
-                for (CanonicalGene pre : pres) {
-                    String preCap = pre.getHugoGeneSymbolAllCaps();
-                    if (!preCap.startsWith("MIR")&&!preCap.startsWith("LET")) {
-                        continue;
-                    }
-//                    aliases.add(pre.getStandardSymbol());
-//                    aliases.add(Long.toString(pre.getEntrezGeneId()));
-//                    aliases.addAll(pre.getAliases());
-                    try {
-                        daoGene.deleteGene(pre);
-                    } catch (DaoException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            if(aliases.size()>2) {
-                mirna.setAliases(aliases);
-            }
-        }
-        
-    }
 
     public static void main(String[] args) throws Exception {
-        System.err.println("This script will be called from ImportGeneData");
-//        if (args.length == 0) {
-//            System.out.println("command line usage:  importMicroRNAIDs.pl <microrna.txt>");
-//            return;
-//        }
-//        ProgressMonitor.setConsoleMode(true);
-//
-//        File geneFile = new File(args[0]);
-//        System.out.println("Reading data from:  " + geneFile.getAbsolutePath());
-//        int numLines = FileUtil.getNumLines(geneFile);
-//        System.out.println(" --> total number of lines:  " + numLines);
-//        ProgressMonitor.setMaxValue(numLines);
-//        ImportMicroRNAIDs.importData(geneFile);
-//        ConsoleUtil.showWarnings();
-//        System.err.println("Done.");
+        if (args.length == 0) {
+            System.out.println("command line usage:  importMicroRNAIDs.pl <microrna.txt>");
+            return;
+        }
+        ProgressMonitor.setConsoleMode(true);
+
+        File geneFile = new File(args[0]);
+        System.out.println("Reading data from:  " + geneFile.getAbsolutePath());
+        int numLines = FileUtil.getNumLines(geneFile);
+        System.out.println(" --> total number of lines:  " + numLines);
+        ProgressMonitor.setMaxValue(numLines);
+        ImportMicroRNAIDs.importData(geneFile);
+        ConsoleUtil.showWarnings();
+        System.err.println("Done.");
     }
 }
