@@ -79,4 +79,5 @@ public class TestGeneticProfileReader {
         assertEquals(GeneticAlterationType.COPY_NUMBER_ALTERATION,
                 geneticProfile.getGeneticAlterationType());
     }
+
 }
