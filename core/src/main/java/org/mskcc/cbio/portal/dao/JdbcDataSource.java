@@ -25,7 +25,7 @@ public class JdbcDataSource extends BasicDataSource {
         this.setUrl(url);
         // Disable this to avoid caching statements (TODO: might need to make
         // this a property, so importer could choose to cache them)
-        this.setPoolPreparedStatements(false);
+        this.setPoolPreparedStatements(true);
         // these are the values cbioportal has been using in their production
         // context.xml files when using jndi
         this.setMaxTotal(500);
