@@ -417,9 +417,13 @@ public class ImportTabDelimData {
                                 }
                             }                            
                         } else {
+                            boolean hasMicroRNA = false;
                             int otherCase = 0;
                             for (CanonicalGene gene : genes) {
                                 if (gene.isMicroRNA() || rppaProfile) { // for micro rna or protein data, duplicate the data
+                                    if (gene.isMicroRNA()) {
+                                        hasMicroRNA = true;
+                                    }
                                     boolean result = storeGeneticAlterations(values, daoGeneticAlteration, gene, geneSymbol);
                                     if (result == true) {
                                         recordStored = true;
@@ -436,17 +440,19 @@ public class ImportTabDelimData {
                             }
                             if (!recordStored) {
                                 if (otherCase == 0) {
-                                    // this means that miRNA or RPPA could not be stored
-                                    ProgressMonitor.logWarning("Could not store miRNA or RPPA data"); //TODO detect the type of of data and give specific warning
-                                }
-                                else if (otherCase > 1) {
-                                    // this means that genes.size() > 1 and data was not rppa or microRNA, so it is not defined how to deal with
-                                    // the ambiguous alias list. Report this:
-                                    ProgressMonitor.logWarning("Gene symbol " + geneSymbol + " found to be ambigous. Record will be skipped for this gene.");
+                                    // this means that microRNA or RPPA could not be stored
+                                    ProgressMonitor.logWarning("Could not store microRNA or RPPA data"); //TODO detect the type of of data and give specific warning
                                 }
                                 else {
-                                    //should not occur. It would mean something is wrong in preceding logic (see else if (genes.size()==1) ) or a configuration problem, e.g. where a symbol maps to both a miRNA and a normal gene:
-                                    throw new RuntimeException("Unexpected error: unable to process row with gene " + geneSymbol);
+                                    // this case :
+                                    //      - the hugo gene symbol was ambiguous (matched multiple entrez-gene-ids)
+                                    //      - at least one of the entrez-gene-ids was not a microRNA (and this is not an rppaProfile)
+                                    //      - all of the matched microRNA ids (if any) failed to be imported (presumably already imported on a prior line)
+                                    String microRNAClause = "";
+                                    if (hasMicroRNA) {
+                                        microRNAClause = " (a mixture of microRNA and other types)";
+                                    }
+                                    ProgressMonitor.logWarning("Gene symbol " + geneSymbol + " found to be ambiguous" + microRNAClause + ". Record will be skipped for this gene.");
                                 }
                             }
                         }
