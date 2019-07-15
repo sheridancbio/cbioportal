@@ -32,29 +32,21 @@
 
 package org.cbioportal.persistence.util;
 
-import org.ehcache.event.*;
-import org.apache.commons.logging.*;
+import java.lang.reflect.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.interceptor.KeyGenerator;
+import org.springframework.util.StringUtils;
 
-public class CacheEventLogger implements CacheEventListener<Object, Object> {
+public class CustomKeyGenerator implements KeyGenerator {
 
-    private static Log log = LogFactory.getLog(CacheEventLogger.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CustomKeyGenerator.class);
 
-    // this is to allow spring to inject EhCacheStatistics via MethodInvokingFactoryBean
-    private static EhCacheStatistics ehCacheStatistics;
-    public static void setCacheStatistics(EhCacheStatistics ecs)
-    {
-        ehCacheStatistics = ecs;
-    }
-
-    @Override
-    public void onEvent(CacheEvent<? extends Object, ? extends Object> cacheEvent) {
-        if (log.isDebugEnabled()) {
-            log.debug("CACHE_EVENT:\n" +
-                     "\tTYPE: " + cacheEvent.getType() + "\n" +
-                     "\tKEY: " + cacheEvent.getKey() + "\n" +
-                     "\tVALUE: " + cacheEvent.getNewValue() + "\n" +
-                     "CACHE_EVENT<>\n");
-            log.debug(ehCacheStatistics.getCacheStatistics());
-        }
+    public Object generate(Object target, Method method, Object... params) {
+        String key = target.getClass().getSimpleName() + "_"
+            + method.getName() + "_"
+            + StringUtils.arrayToDelimitedString(params, "_");
+        LOG.debug("Created key: " + key);
+        return key;
     }
 }
