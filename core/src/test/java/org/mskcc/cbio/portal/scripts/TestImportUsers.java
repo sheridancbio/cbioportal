@@ -51,7 +51,8 @@ import static org.junit.Assert.*;
  * JUnit test for ImportUsers class.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
+@ContextConfiguration(locations = { "/applicationContext-dao.xml", "/applicationContext-ehcache.xml" })
+//@ContextConfiguration(locations = { "classpath:/applicationContext-business.xml", "classpath:/applicationContext-dao.xml" , "classpath:/applicationContext-ehcache.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class TestImportUsers {
