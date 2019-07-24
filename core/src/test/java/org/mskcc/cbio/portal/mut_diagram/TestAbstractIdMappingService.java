@@ -48,7 +48,7 @@ import static org.junit.Assert.*;
  * Abstract unit test for implementations of IdMappingService.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
 public class TestAbstractIdMappingService {
     protected IdMappingService idMappingService;
 

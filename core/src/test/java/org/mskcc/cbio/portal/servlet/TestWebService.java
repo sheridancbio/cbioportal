@@ -57,7 +57,7 @@ import static org.easymock.EasyMock.*;
  * JUnit test for WebService class.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class TestWebService {

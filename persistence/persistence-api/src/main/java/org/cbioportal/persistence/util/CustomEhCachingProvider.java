@@ -35,9 +35,6 @@ package org.cbioportal.persistence.util;
 import javax.cache.CacheManager;
 import org.ehcache.jsr107.EhcacheCachingProvider;
 import org.springframework.beans.factory.annotation.Value;
-import java.net.URL;
-import java.net.URI;
-import java.io.File;
 
 public class CustomEhCachingProvider extends EhcacheCachingProvider {
 
@@ -48,22 +45,9 @@ public class CustomEhCachingProvider extends EhcacheCachingProvider {
     public CacheManager getCacheManager() {
 
         CacheManager toReturn = null;
-        File ehcache_config_file = new File("/data/sheridan/repos/sheridancbio/cbioportal/core/src/test/resources/ehcache-mixed.xml");
-        URI ehcache_config_uri = ehcache_config_file.toURI();
-//        System.out.println("\n\n\nATTEMPT TO CONSTRUCT PROVIDER using xml : " + xmlConfiguration);
-//        System.out.flush();
-        try {
-//            toReturn = this.getCacheManager(getClass().getResource(xmlConfiguration).toURI(),
-//                                            getClass().getClassLoader());
-//            URL ehcache_config_url = getClass().getResource(xmlConfiguration);
-//            System.out.println(" using URL : " + ehcache_config_url + "\n\n");
-//            System.out.flush();
-
-//            URI ehcache_config_uri = ehcache_config_url.toURI();
-//            System.out.println(" using URI : " + ehcache_config_uri + "\n\n");
-//            System.out.flush();
-
-            toReturn = this.getCacheManager(ehcache_config_uri, getClass().getClassLoader());
+         try {
+            toReturn = this.getCacheManager(getClass().getResource(xmlConfiguration).toURI(),
+                                            getClass().getClassLoader());
         }
         catch (Exception e) {
             e.printStackTrace();

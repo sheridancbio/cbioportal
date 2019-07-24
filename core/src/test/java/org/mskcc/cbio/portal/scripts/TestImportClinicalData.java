@@ -60,7 +60,7 @@ import java.util.*;
  * @author Pieter Lukasse
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class TestImportClinicalData {

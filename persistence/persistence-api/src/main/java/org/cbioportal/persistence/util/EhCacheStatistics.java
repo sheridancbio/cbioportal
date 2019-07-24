@@ -64,7 +64,7 @@ public class EhCacheStatistics {
     }
 
     @PostConstruct
-    private void initializeStatisticsService () {
+    public void initializeStatisticsService () {
         try {
             statisticsService = new DefaultStatisticsService();
             for (String cacheName : cacheManager.getCacheNames()) {
