@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
  * JUnit test for DaoSample class
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class TestDaoSampleProfile {

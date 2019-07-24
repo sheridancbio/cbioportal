@@ -52,7 +52,7 @@ import java.util.ArrayList;
  * JUnit Tests for DaoInteraction.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class TestDaoInteraction {

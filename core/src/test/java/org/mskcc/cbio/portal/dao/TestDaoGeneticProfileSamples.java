@@ -49,7 +49,7 @@ import java.util.ArrayList;
  * @author Ethan Cerami.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml" })
+@ContextConfiguration(locations = { "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
 public class TestDaoGeneticProfileSamples {
 	
 	CancerStudy study;

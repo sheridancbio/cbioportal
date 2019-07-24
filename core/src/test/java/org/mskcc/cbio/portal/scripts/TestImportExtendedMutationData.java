@@ -59,7 +59,7 @@ import org.springframework.context.ApplicationContext;
  * @author Arthur Goldberg goldberg@cbio.mskcc.org
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/integrationTestScript.xml", "classpath:/applicationContext-dao.xml" })
+@ContextConfiguration(locations = { "classpath:/integrationTestScript.xml", "classpath:/applicationContext-dao.xml", "classpath:/applicationContext-ehcache.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public class TestImportExtendedMutationData {
