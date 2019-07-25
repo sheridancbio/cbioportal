@@ -14,7 +14,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CacheStatisticsServiceImpl implements CacheStatisticsService{
+public class CacheStatisticsServiceImpl implements CacheStatisticsService {
 
     @Autowired
     public CacheManager cacheManager;
@@ -22,18 +22,18 @@ public class CacheStatisticsServiceImpl implements CacheStatisticsService{
     @Autowired
     public EhCacheStatistics ehCacheStatistics;
 
-    @Value("${cache.statistics.enabled}")
-    public boolean cacheStatisticsEnabled;
+    @Value("${cache.statistics.endpoint.enabled:false}")
+    public boolean cacheStatisticsEndpointEnabled;
     
-    private void checkIfCacheStatisticsEnabled() {
-        if (!cacheStatisticsEnabled) {
+    private void checkIfCacheStatisticsEndpointEnabled() {
+        if (!cacheStatisticsEndpointEnabled) {
             throw new AccessDeniedException("Cache statistics is not enabled for this instance of the portal.");
         }
     }
  
     @Override
     public List<String> getKeyCountsPerClass(String cacheName) throws CacheNotFoundException {
-        checkIfCacheStatisticsEnabled();
+        checkIfCacheStatisticsEndpointEnabled();
         Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
             throw new CacheNotFoundException(cacheName);
@@ -56,7 +56,7 @@ public class CacheStatisticsServiceImpl implements CacheStatisticsService{
 
     @Override
     public List<String> getKeysInCache(String cacheName) throws CacheNotFoundException {
-        checkIfCacheStatisticsEnabled();
+        checkIfCacheStatisticsEndpointEnabled();
         Cache cache = cacheManager.getCache(cacheName);
         if (cache == null) {
             throw new CacheNotFoundException(cacheName);
@@ -75,7 +75,7 @@ public class CacheStatisticsServiceImpl implements CacheStatisticsService{
 
     @Override
     public String getCacheStatistics() {
-        checkIfCacheStatisticsEnabled();
+        checkIfCacheStatisticsEndpointEnabled();
         return ehCacheStatistics.getCacheStatistics();
     }
 }

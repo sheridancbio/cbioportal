@@ -272,4 +272,4 @@ matchminer.token=
 #hrrs.enable.logging=false
 
 # Enable cache statistics endpoint for EHCache monitoring
-cache.statistics.enabled=false
+cache.statistics.endpoint.enabled=false
