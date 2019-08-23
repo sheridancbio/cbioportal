@@ -32,13 +32,20 @@
 
 package org.mskcc.cbio.portal.util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import org.mskcc.cbio.portal.model.ExtendedMutation;
 import org.mskcc.cbio.portal.model.ExtendedMutation.MutationEvent;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mskcc.cbio.maf.MafUtil;
+import org.mskcc.cbio.portal.dao.DaoException;
+import org.mskcc.cbio.portal.dao.DaoGeneticProfile;
+import org.mskcc.cbio.portal.model.GeneticProfile;
 
 /**
  *
@@ -217,4 +224,22 @@ public class TestMafUtil {
 
         return records;
     }
+
+    @Test
+    public void testResolveAnnotationNamespaces() throws Exception {
+        Set<String> namespaces = new LinkedHashSet<>(Arrays.asList("namespace1", "namespace2"));
+        FileReader reader = new FileReader("src/test/resources/data_mutations_extended_json_annotation.txt");
+        BufferedReader buf = new BufferedReader(reader);
+        String line = buf.readLine().trim();
+        while (line.startsWith("#")) {
+            line = buf.readLine().trim();
+        }
+        MafUtil mafUtil = new MafUtil(line, namespaces);
+        for (String ns : namespaces) {
+            if (!mafUtil.getNamespaceIndexMap().containsKey(ns)) {
+                Assert.fail("maUtil.getNamespaceIndexMap() is missing namespace called '" + ns + "'");
+            }
+        }
+    }
+
 }
