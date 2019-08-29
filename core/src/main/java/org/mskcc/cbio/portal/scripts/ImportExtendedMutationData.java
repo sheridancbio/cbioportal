@@ -88,6 +88,7 @@ public class ImportExtendedMutationData{
 
         // create default MutationFilter
         myMutationFilter = new MutationFilter( );
+        this.namespaces = namespaces;
     }
 
     public ImportExtendedMutationData(File mutationFile, int geneticProfileId, String genePanel) {
@@ -117,7 +118,6 @@ public class ImportExtendedMutationData{
         long mutationEventId = DaoMutation.getLargestMutationEventId();
         
         List<AlleleSpecificCopyNumber> ascnRecords = new ArrayList<AlleleSpecificCopyNumber>();
-        long largestAscnId = DaoAlleleSpecificCopyNumber.getLargestAscnId();
 
         FileReader reader = new FileReader(mutationFile);
         BufferedReader buf = new BufferedReader(reader);
@@ -416,18 +416,16 @@ public class ImportExtendedMutationData{
 
                     // TODO we don't use this info right now...
                     mutation.setCanonicalTranscript(true);
-                    if (namespaces.contains(ASCN_NAMESPACE)) {
+
+                    AlleleSpecificCopyNumber ascn = null;
+                    if (namespaces != null && namespaces.contains(ASCN_NAMESPACE)) {
                         Map<String, String> ascnData = record.getNamespacesMap().remove(ASCN_NAMESPACE);
-                        // replace code below with actual constructor/generation of new ASCN record
                         // The AlleleSpecificCopyNumber constructor will construct the record from
                         // the ascnData hashmap and the ascnData will simultaneously be removed from
                         // the record's namespaces map since it is going into its own table
-                        AlleleSpecificCopyNumber ascn = new AlleleSpecificCopyNumber(ascnData);
-                        ascn.setAscnId(++largestAscnId);
-                        ascnRecords.add(ascn);
-                        mutation.setAscnId(ascn.getAscnId());
+                        ascn = new AlleleSpecificCopyNumber(ascnData);
                     }
-                    if (!record.getNamespacesMap().isEmpty()) {
+                    if (record.getNamespacesMap() != null && !record.getNamespacesMap().isEmpty()) {
                         mutation.setAnnotationJson(convertMapToJsonString(record.getNamespacesMap()));
                     }
 
@@ -435,44 +433,42 @@ public class ImportExtendedMutationData{
 
                     //  Filter out Mutations
                     if( myMutationFilter.acceptMutation( mutation, this.filteredMutations )) {
-                                                MutationEvent event =
-                                                    existingEvents.containsKey(mutation.getEvent()) ?
-                                                    existingEvents.get(mutation.getEvent()) :
-                                                    DaoMutation.getMutationEvent(mutation.getEvent());
-                                                if (event!=null) {
-                                                    mutation.setEvent(event);
-                                                } else {
-                                                    mutation.setMutationEventId(++mutationEventId);
-                                                    existingEvents.put(mutation.getEvent(), mutation.getEvent());
-                                                    newEvents.add(mutation.getEvent());
-                                                }
+                        MutationEvent event =
+                            existingEvents.containsKey(mutation.getEvent()) ?
+                            existingEvents.get(mutation.getEvent()) :
+                            DaoMutation.getMutationEvent(mutation.getEvent());
+                        if (event!=null) {
+                            mutation.setEvent(event);
+                        } else {
+                            mutation.setMutationEventId(++mutationEventId);
+                            existingEvents.put(mutation.getEvent(), mutation.getEvent());
+                            newEvents.add(mutation.getEvent());
+                        }
 
-                                                ExtendedMutation exist = mutations.get(mutation);
-                                                if (exist!=null) {
-                                                    ExtendedMutation merged = mergeMutationData(exist, mutation);
-                                                    mutations.put(merged, merged);
-                                                } else {
-                                                    mutations.put(mutation,mutation);
-                                                }
-                                                if(!sampleSet.contains(sample.getStableId())) {
-                                                    addSampleProfileRecord(sample);
-                                                }
-                                                //keep track:
-                                                sampleSet.add(sample.getStableId());
-                                                geneSet.add(mutation.getEntrezGeneId()+"");
+                        ExtendedMutation exist = mutations.get(mutation);
+                        if (exist!=null) {
+                            ExtendedMutation merged = mergeMutationData(exist, mutation);
+                            mutations.put(merged, merged);
+                        } else {
+                            mutations.put(mutation,mutation);
+                        }
+                        if(!sampleSet.contains(sample.getStableId())) {
+                            addSampleProfileRecord(sample);
+                        }
+                        // update ascn object with mutation unique key details
+                        if (ascn != null){
+                            ascn.updateAscnUniqueKeyDetails(mutation);
+                            ascnRecords.add(ascn);
+                        }
+
+                        //keep track:
+                        sampleSet.add(sample.getStableId());
+                        geneSet.add(mutation.getEntrezGeneId()+"");
                     }
                     else {
                         entriesSkipped++;
                     }
                 }
-            }
-        }
- 
-        for (AlleleSpecificCopyNumber ascn : ascnRecords) { 
-            try {
-                DaoAlleleSpecificCopyNumber.addAlleleSpecificCopyNumber(ascn);
-            } catch (DaoException ex) {
-                throw ex;
             }
         }
 
@@ -487,6 +483,14 @@ public class ImportExtendedMutationData{
         for (ExtendedMutation mutation : mutations.values()) {
             try {
                 DaoMutation.addMutation(mutation,false);
+            } catch (DaoException ex) {
+                throw ex;
+            }
+        }
+ 
+        for (AlleleSpecificCopyNumber ascn : ascnRecords) { 
+            try {
+                DaoAlleleSpecificCopyNumber.addAlleleSpecificCopyNumber(ascn);
             } catch (DaoException ex) {
                 throw ex;
             }

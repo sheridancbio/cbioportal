@@ -33,45 +33,37 @@
 package org.mskcc.cbio.portal.dao;
 
 import org.mskcc.cbio.portal.model.*;
-import java.sql.*;
 
 /**
  * Data access object for Mutation table
  */
 public final class DaoAlleleSpecificCopyNumber {
 
-    public static long getLargestAscnId() throws DaoException {
-        Connection con = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            con = JdbcUtil.getDbConnection(DaoAlleleSpecificCopyNumber.class);
-            pstmt = con.prepareStatement("SELECT MAX(`ASCN_ID`) FROM `allele_specific_copy_number`");
-            rs = pstmt.executeQuery();
-            return rs.next() ? rs.getLong(1) : 0;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        } finally {
-            JdbcUtil.closeAll(DaoAlleleSpecificCopyNumber.class, con, pstmt, rs);
-        }
-    }
-    
     public static int addAlleleSpecificCopyNumber(AlleleSpecificCopyNumber ascn) throws DaoException {
         if (!MySQLbulkLoader.isBulkLoad()) {
             throw new DaoException("You have to turn on MySQLbulkLoader in order to insert allele specific copy numbers");
         } else {
             int result = 1;
             MySQLbulkLoader.getMySQLbulkLoader("allele_specific_copy_number").insertRecord(
-                String.valueOf(ascn.getAscnId()),
+                Long.toString(ascn.getMutationEventId()),
+                Integer.toString(ascn.getGeneticProfileId()),
+                Integer.toString(ascn.getSampleId()),
                 Integer.toString(ascn.getAscnIntegerCopyNumber()),
                 ascn.getAscnMethod(),
                 Float.toString(ascn.getCcfMCopiesUpper()),
                 Float.toString(ascn.getCcfMCopies()),
-                Boolean.toString(ascn.getClonal()),
+                resolveBooleanToString(ascn.getClonal()),
                 Integer.toString(ascn.getMinorCopyNumber()),
                 Integer.toString(ascn.getMutantCopies()),
                 Integer.toString(ascn.getTotalCopyNumber()));
             return result;
         }
+    }
+
+    private static String resolveBooleanToString(Boolean value) {
+        if (value != null) {
+            return (value ? "1" : "0");
+        }
+        return null;
     }
 }

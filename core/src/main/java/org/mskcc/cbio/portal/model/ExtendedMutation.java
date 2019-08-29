@@ -390,7 +390,6 @@ public final class ExtendedMutation
     private String driverFilterAnn;
     private String driverTiersFilter;
     private String driverTiersFilterAnn;
-    private Long ascnId;
     private String annotationJson;
 
     public ExtendedMutation() {
@@ -981,14 +980,6 @@ public final class ExtendedMutation
 
     public String getDriverTiersFilterAnn() {
         return driverTiersFilterAnn;
-    }
-
-    public Long getAscnId() {
-        return ascnId;
-    }
-
-    public void setAscnId(Long ascnId) {
-        this.ascnId = ascnId;
     }
 
     public String getAnnotationJson() {

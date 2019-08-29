@@ -42,9 +42,11 @@ import java.util.*;
 import java.util.regex.Matcher;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mskcc.cbio.maf.MafRecord;
 import org.mskcc.cbio.maf.MafUtil;
 import org.mskcc.cbio.portal.dao.DaoException;
 import org.mskcc.cbio.portal.dao.DaoGeneticProfile;
+import org.mskcc.cbio.portal.model.AlleleSpecificCopyNumber;
 import org.mskcc.cbio.portal.model.GeneticProfile;
 
 /**
@@ -52,6 +54,9 @@ import org.mskcc.cbio.portal.model.GeneticProfile;
  * @author ochoaa
  */
 public class TestMafUtil {
+    private final String ASCN_NAMESPACE = "ascn";
+    private final Set<String> VALID_NAMESPACES = new LinkedHashSet<>(Arrays.asList("namespace1", "namespace2"));
+    private final String INVALID_NAMESPACE = "invalid_namespace";
 
     @Test
     public void testResolveTumorSeqAllele() {
@@ -225,21 +230,58 @@ public class TestMafUtil {
         return records;
     }
 
+    /**
+     * Test that expected namespaces are resolved correctly from MAF header.
+     * @throws Exception 
+     */
     @Test
     public void testResolveAnnotationNamespaces() throws Exception {
-        Set<String> namespaces = new LinkedHashSet<>(Arrays.asList("namespace1", "namespace2"));
+        
         FileReader reader = new FileReader("src/test/resources/data_mutations_extended_json_annotation.txt");
         BufferedReader buf = new BufferedReader(reader);
         String line = buf.readLine().trim();
         while (line.startsWith("#")) {
             line = buf.readLine().trim();
         }
-        MafUtil mafUtil = new MafUtil(line, namespaces);
-        for (String ns : namespaces) {
+        MafUtil mafUtil = new MafUtil(line, VALID_NAMESPACES);
+        Assert.assertTrue(mafUtil.getNamespaceIndexMap().size() == 2);
+        for (String ns : VALID_NAMESPACES) {
             if (!mafUtil.getNamespaceIndexMap().containsKey(ns)) {
-                Assert.fail("maUtil.getNamespaceIndexMap() is missing namespace called '" + ns + "'");
+                Assert.fail("maUtil.getNamespaceIndexMap() is missing expected namespace: '" + ns + "'");
             }
         }
+        Assert.assertFalse("Invalid namespace found in mafUtil.getNamespaceIndexMap(): " + INVALID_NAMESPACE, mafUtil.getNamespaceIndexMap().containsKey(INVALID_NAMESPACE));
+        buf.close();
     }
 
+    /**
+     * Test that ASCN namespace is resolved correctly from MAF.
+     * @throws Exception 
+     */
+    @Test
+    public void testResolveAscnAnnotationNamespace() throws Exception {
+        
+        FileReader reader = new FileReader("src/test/resources/data_mutations_extended_json_annotation.txt");
+        BufferedReader buf = new BufferedReader(reader);
+        String line = buf.readLine().trim();
+        while (line.startsWith("#")) {
+            line = buf.readLine().trim();
+        }
+        MafUtil mafUtil = new MafUtil(line, new LinkedHashSet<>(Arrays.asList(ASCN_NAMESPACE)));
+        Assert.assertTrue(mafUtil.getNamespaceIndexMap().size() == 1);
+        Assert.assertTrue(mafUtil.getNamespaceIndexMap().containsKey(ASCN_NAMESPACE));
+
+        List<AlleleSpecificCopyNumber> ascnRecords = new ArrayList<>();
+        while((line=buf.readLine()) != null) {
+            if (!line.startsWith("#") && line.trim().length() > 0) {
+                String[] parts = line.split("\t", -1 ); // the -1 keeps trailing empty strings; see JavaDoc for String
+                MafRecord record = mafUtil.parseRecord(line);
+                // every record in test MAF should have ASCN data
+                Assert.assertTrue(record.getNamespacesMap().containsKey(ASCN_NAMESPACE));
+                Map<String, String> ascnData = record.getNamespacesMap().get(ASCN_NAMESPACE);
+                ascnRecords.add(new AlleleSpecificCopyNumber(ascnData));
+            }
+        }
+        buf.close();
+    }
 }

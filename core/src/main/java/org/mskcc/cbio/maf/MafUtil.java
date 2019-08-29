@@ -43,6 +43,7 @@ import joptsimple.internal.Strings;
  */
 public class MafUtil {
     private static final Pattern validNucleotidesPattern = Pattern.compile("^([ATGC]*)$");
+    public static final String NAMESPACE_DELIMITER = ".";
     // standard header column names
     public static final String HUGO_SYMBOL = "Hugo_Symbol";
     public static final String ENTREZ_GENE_ID = "Entrez_Gene_Id";
@@ -368,8 +369,8 @@ public class MafUtil {
                 driverTiersAnnIndex = i;
             }  else if (namespaces != null && !namespaces.isEmpty()) {
                 for (String ns : namespaces) {
-                    if (header.toLowerCase().startsWith(ns + ":")) {
-                        String nsKey = header.toLowerCase().replace(ns + ":", "");
+                    if (header.toLowerCase().startsWith(ns + NAMESPACE_DELIMITER)) {
+                        String nsKey = header.toLowerCase().replace(ns + NAMESPACE_DELIMITER, "");
                         Map<String, Integer> nsKeyIndexMap = this.namespaceIndexMap.getOrDefault(ns, new HashMap<String, Integer>());
                         nsKeyIndexMap.put(nsKey, i);
                         this.namespaceIndexMap.put(ns, nsKeyIndexMap);
