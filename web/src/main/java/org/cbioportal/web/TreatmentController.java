@@ -99,7 +99,7 @@ public class TreatmentController {
     }
 
     @PreAuthorize("hasPermission(#treatmentFilter, 'TreatmentFilter', 'read')")
-    @RequestMapping(value = "/treatments/fetch", method = RequestMethod.POST, 
+    @RequestMapping(value = "/treatments/fetch", method = RequestMethod.POST,
         consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Fetch treatments")
     public ResponseEntity<List<Treatment>> fetchTreatments(

@@ -381,7 +381,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         }
         return true;
     }
-    
+
     private boolean extractAttributesFromClinicalDataBinCountFilter(HttpServletRequest request) {
         try {
             ClinicalDataBinCountFilter clinicalDataBinCountFilter = objectMapper.readValue(request.getReader(),
@@ -421,7 +421,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         }
         return true;
     }
-    
+
     private boolean extractAttributesFromGroupFilter(HttpServletRequest request) {
         try {
             GroupFilter groupFilter = objectMapper.readValue(request.getReader(),
@@ -541,7 +541,7 @@ public class InvolvedCancerStudyExtractorInterceptor extends HandlerInterceptorA
         }
         return studyIdSet;
     }
-    
+
     private Set<String> extractCancerStudyIdsFromMolecularProfileCasesGroups(Collection<MolecularProfileCasesGroupFilter> molecularProfileCasesGroupFilters) {
         Set<String> molecularProfileIds = molecularProfileCasesGroupFilters.stream().flatMap(group -> {
             return group.getMolecularProfileCaseIdentifiers().stream()
