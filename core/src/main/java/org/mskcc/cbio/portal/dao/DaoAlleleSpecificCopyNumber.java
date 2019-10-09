@@ -45,19 +45,26 @@ public final class DaoAlleleSpecificCopyNumber {
         } else {
             int result = 1;
             MySQLbulkLoader.getMySQLbulkLoader("allele_specific_copy_number").insertRecord(
-                Long.toString(ascn.getMutationEventId()),
-                Integer.toString(ascn.getGeneticProfileId()),
-                Integer.toString(ascn.getSampleId()),
-                Integer.toString(ascn.getAscnIntegerCopyNumber()),
+                resolveValueToString(ascn.getMutationEventId()),
+                resolveValueToString(ascn.getGeneticProfileId()),
+                resolveValueToString(ascn.getSampleId()),
+                resolveValueToString(ascn.getAscnIntegerCopyNumber()),
                 ascn.getAscnMethod(),
-                Float.toString(ascn.getCcfMCopiesUpper()),
-                Float.toString(ascn.getCcfMCopies()),
+                resolveValueToString(ascn.getCcfMCopiesUpper()),
+                resolveValueToString(ascn.getCcfMCopies()),
                 resolveBooleanToString(ascn.getClonal()),
-                Integer.toString(ascn.getMinorCopyNumber()),
-                Integer.toString(ascn.getMutantCopies()),
-                Integer.toString(ascn.getTotalCopyNumber()));
+                resolveValueToString(ascn.getMinorCopyNumber()),
+                resolveValueToString(ascn.getMutantCopies()),
+                resolveValueToString(ascn.getTotalCopyNumber()));
             return result;
         }
+    }
+
+    private static String resolveValueToString(Object value) {
+        if (value != null) {
+            return String.valueOf(value);
+        }
+        return null;
     }
 
     private static String resolveBooleanToString(Boolean value) {
