@@ -396,11 +396,11 @@ CREATE TABLE `reference_genome` (
     UNIQUE INDEX `BUILD_NAME_UNIQUE` (`BUILD_NAME` ASC)
 );
 
-INSERT INTO `reference_genome` 
+INSERT INTO `reference_genome`
 VALUES (1, 'human', 'hg19', 'GRCh37', 2897310462, 'http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips', '2009-02-01');
-INSERT INTO `reference_genome` 
+INSERT INTO `reference_genome`
 VALUES (2, 'human', 'hg38', 'GRCh38', 3049315783, 'http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips', '2013-12-01');
-INSERT INTO `reference_genome` 
+INSERT INTO `reference_genome`
 VALUES (3, 'mouse', 'mm10', 'GRCm38', 2652783500, 'http://hgdownload.cse.ucsc.edu//goldenPath/mm10/bigZips', '2012-01-01');
 
 CREATE TABLE `reference_genome_gene` (
@@ -850,3 +850,10 @@ CREATE TABLE `resource_study` (
   FOREIGN KEY (`INTERNAL_ID`) REFERENCES `cancer_study` (`CANCER_STUDY_ID`) ON DELETE CASCADE
 );
 UPDATE `info` SET `DB_SCHEMA_VERSION`="2.12.4";
+
+##version: 2.12.5
+ALTER TABLE `allele_specific_copy_number` CHANGE CCF_M_COPIES CCF_EXPECTED_COPIES float;
+ALTER TABLE `allele_specific_copy_number` CHANGE CCF_M_COPIES_UPPER CCF_EXPECTED_COPIES_UPPER float;
+ALTER TABLE `allele_specific_copy_number` CHANGE MUTANT_COPIES EXPECTED_ALT_COPIES int;
+ALTER TABLE `allele_specific_Copy_number` CHANGE CLONAL CLONAL varchar(16);
+UPDATE `info` SET `DB_SCHEMA_VERSION`="2.12.5";
