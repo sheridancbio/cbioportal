@@ -1,5 +1,5 @@
 --
--- Copyright (c) 2016 - 2019 Memorial Sloan-Kettering Cancer Center.
+-- Copyright (c) 2016 - 2020 Memorial Sloan-Kettering Cancer Center.
 --
 -- This library is distributed in the hope that it will be useful, but WITHOUT
 -- ANY WARRANTY, WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS
@@ -852,8 +852,24 @@ CREATE TABLE `resource_study` (
 UPDATE `info` SET `DB_SCHEMA_VERSION`="2.12.4";
 
 ##version: 2.12.5
-ALTER TABLE `allele_specific_copy_number` CHANGE CCF_M_COPIES CCF_EXPECTED_COPIES float;
-ALTER TABLE `allele_specific_copy_number` CHANGE CCF_M_COPIES_UPPER CCF_EXPECTED_COPIES_UPPER float;
-ALTER TABLE `allele_specific_copy_number` CHANGE MUTANT_COPIES EXPECTED_ALT_COPIES int;
-ALTER TABLE `allele_specific_Copy_number` CHANGE CLONAL CLONAL varchar(16);
+-- WARNING: old allele specific copy number (ASCN) schema is incompatible with the new schema
+-- studies that contain ASCN data will lose any existing ASCN data and should be reimported
+DROP TABLE IF EXISTS `allele_specific_copy_number`;
+CREATE TABLE `allele_specific_copy_number` (
+    `MUTATION_EVENT_ID` int(255) NOT NULL,
+    `GENETIC_PROFILE_ID` int(11) NOT NULL,
+    `SAMPLE_ID` int(11) NOT NULL,
+    `ASCN_INTEGER_COPY_NUMBER` int DEFAULT NULL,
+    `ASCN_METHOD` varchar(24) NOT NULL,
+    `CCF_EXPECTED_COPIES_UPPER` float DEFAULT NULL,
+    `CCF_EXPECTED_COPIES` float DEFAULT NULL,
+    `CLONAL` varchar(16) DEFAULT NULL,
+    `MINOR_COPY_NUMBER` int DEFAULT NULL,
+    `EXPECTED_ALT_COPIES` int DEFAULT NULL,
+    `TOTAL_COPY_NUMBER` int DEFAULT NULL,
+    UNIQUE KEY `UQ_ASCN_MUTATION_EVENT_ID_GENETIC_PROFILE_ID_SAMPLE_ID` (`MUTATION_EVENT_ID`,`GENETIC_PROFILE_ID`,`SAMPLE_ID`), -- Constraint to block duplicated mutation entries
+    FOREIGN KEY (`MUTATION_EVENT_ID`) REFERENCES `mutation_event` (`MUTATION_EVENT_ID`),
+    FOREIGN KEY (`GENETIC_PROFILE_ID`) REFERENCES `genetic_profile` (`GENETIC_PROFILE_ID`) ON DELETE CASCADE,
+    FOREIGN KEY (`SAMPLE_ID`) REFERENCES `sample` (`INTERNAL_ID`) ON DELETE CASCADE
+);
 UPDATE `info` SET `DB_SCHEMA_VERSION`="2.12.5";
