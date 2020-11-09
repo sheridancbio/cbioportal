@@ -8,7 +8,8 @@ metadata:
   labels:
     run: cbioportal-performance-test
   name: cbioportal-performance-test
-  selfLink: /apis/extensions/v1beta1/namespaces/default/deployments/cbioportal-performance-test
+  namespace: performance-test
+  selfLink: /apis/extensions/v1beta1/namespaces/performance-test/deployments/cbioportal-performance-test
 spec:
   replicas: 1
   selector:
@@ -168,7 +169,8 @@ metadata:
   labels:
     run: cbioportal-performance-test
   name: cbioportal-performance-test
-  selfLink: /api/v1/namespaces/default/services/cbioportal-performance-test
+  namespace: performance-test
+  selfLink: /api/v1/namespaces/performance-test/services/cbioportal-performance-test
 spec:
   ports:
   - port: 80

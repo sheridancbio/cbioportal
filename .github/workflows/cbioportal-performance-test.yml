@@ -30,8 +30,9 @@ jobs:
       - name: Set context for kubectl cluster
         uses: azure/k8s-set-context@v1
         with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG }}
+          method: service-account
+          k8s-url: ${{ secrets.K8S_URL }}
+          k8s-secret: ${{ secrets.K8S_SECRET }}
       - name: Deploy to kubernetes
         uses: Azure/k8s-deploy@v1.2
         with:
