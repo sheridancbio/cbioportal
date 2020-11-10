@@ -8,7 +8,7 @@ OK_RESPONSE_CODE=200
 EMPTY_LIST_RESPONSE=[]
 SEARCH_STR=entrezGeneId
 
-kubectl exec -it $POD_NAME -- bash -c "curl --max-time $MAX_TIME -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"studyIds\": [ \"$STUDY_NAME\" ]}'" > curl.out
+kubectl exec -it $POD_NAME --namespace=performance-test -- bash -c "curl --max-time $MAX_TIME -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"studyIds\": [ \"$STUDY_NAME\" ]}'" > curl.out
 RESPONSE_CODE=`tail -1 curl.out`
 RESPONSE_BODY=`head -1 curl.out`
 if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
