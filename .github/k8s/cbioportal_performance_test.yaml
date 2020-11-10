@@ -112,10 +112,6 @@ spec:
             "https://master.cbioportal.org",
             "--max-threads",
             "0",
-            "--session-store",
-            "redis",
-            "--session-store-operation-timeout",
-            "10000",
             "-AmaxHttpHeaderSize=16384",
             "-AconnectionTimeout=20000",
             "--enable-compression",
@@ -153,9 +149,6 @@ spec:
               memory: 14Gi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-      # run on big memory machine
-      nodeSelector:
-         kops.k8s.io/instancegroup: cbioportal-performance-testing
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
