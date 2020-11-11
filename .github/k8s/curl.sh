@@ -20,24 +20,29 @@ if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
     echo "Request failed with response code '$RESPONSE_CODE', expected '$OK_RESPONSE_CODE'"
     exit 1
 else
+    # check if we expect [] and did not get it
     if [ "$EXPECT_EMPTY_LIST_RESPONSE" -eq 1 ]; then
-        echo "EXPECT_EMPTY_LIST_RESPONSE '$EXPECT_EMPTY_LIST_RESPONSE' is true"
+        if [ "$RESPONSE_BODY" != "[]" ]; then
+            echo "Request returned a non-empty response when we expect an empty list."
+            exit 1
+        fi
+        # else expected empty list and got it
+        exit 0
     fi
-    if [ "$EXPECT_EMPTY_RESPONSE" -eq 1 ]; then
-        echo "EXPECT_EMPTY_RESPONSE '$EXPECT_EMPTY_RESPONSE' is true"
+    # check if we expect an empty response and did not get it
+    if [ "$EXPECT_EMPTY_RESPONSE" -eq 1 ]
+        if [ ! -z "$RESPONSE_BODY" ]; then
+            echo "Request returned a non-empty response when we expect an empty response."
+            exit 1
+        fi
+        # else expected empty response and got it
+        exit 0
     fi
-    if [ "$EXPECT_EMPTY_LIST_RESPONSE" -eq 1 ] && [ "$RESPONSE_BODY" != "[]" ]; then
-        echo "Request returned a non-empty response when we expect an empty list."
-        exit 1
-    fi
-    if [ "$EXPECT_EMPTY_RESPONSE" -eq 1 ] && [ ! -z "$RESPONSE_BODY" ]; then
-        echo "Request returned a non-empty response when we expect an empty response."
-        exit 1
-    fi
+    # check if we got an emtpy response or empty list
     if [ "$RESPONSE_BODY" == "$EMPTY_LIST_RESPONSE" ] || [ -z "$RESPONSE_BODY" ]; then
         echo "Request failed with empty response."
         exit 1
-    else
+    else # check for search string in response
         if [[ "$RESPONSE_BODY" != *"$SEARCH_STR"* ]]; then
            echo "Response did not contain search string '$SEARCH_STR'."
             exit 1
