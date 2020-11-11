@@ -13,9 +13,8 @@ EMPTY_LIST_RESPONSE='[]'
 kubectl exec -it --namespace=performance-test $POD_NAME -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '$POST_BODY'" > curl.out
 RESPONSE_CODE=`tail -1 curl.out`
 RESPONSE_BODY=`head -1 curl.out`
-echo "THIS RESPONSE BODY"
-echo "$RESPONSE_BODY"
 
+# did we get the response code we expect?
 if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
     echo "Request failed with response code '$RESPONSE_CODE', expected '$OK_RESPONSE_CODE'"
     exit 1

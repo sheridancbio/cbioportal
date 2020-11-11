@@ -61,7 +61,7 @@ jobs:
           SEARCH_STR: "entrezGeneId"
           POST_BODY: "{\"studyIds\": [ \"genie_public\" ]}"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: POST Request for /cna-genes endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
@@ -69,59 +69,49 @@ jobs:
           SEARCH_STR: "entrezGeneId"
           POST_BODY: "@sampleIdentifiers.json"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: POST Request for /treatments/patient endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "http://localhost:8888/api/treatments/patient"
-          OK_RESPONSE_CODE: 200
-          EMPTY_LIST_RESPONSE: "[]"
           POST_BODY: "@sampleIdentifiers.json"
         run: |
           # TODO: change if treatment data is ever added
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "NA" "$POST_BODY" 1 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "NA" "$POST_BODY" 1 0
       - name: POST Request for /treatments/sample endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "http://localhost:8888/api/treatments/sample"
-          OK_RESPONSE_CODE: 200
-          EMPTY_LIST_RESPONSE: "[]"
           POST_BODY: "@sampleIdentifiers.json"
         run: |
           # TODO: change if treatment data is ever added
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "NA" "$POST_BODY" 1 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "NA" "$POST_BODY" 1 0
       - name: POST Request for /fusion-genes/fetch endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "http://localhost:8888/api/fusion-genes/fetch"
-          OK_RESPONSE_CODE: 200
-          EMPTY_LIST_RESPONSE: "[]"
           SEARCH_STR: "entrezGeneId"
           POST_BODY: "@sampleIdentifiers.json"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: POST Request for /copy-number-segments/fetch endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "http://localhost:8888/api/copy-number-segments/fetch?projection=META"
-          OK_RESPONSE_CODE: 200
-          EMPTY_LIST_RESPONSE: "[]"
           SEARCH_STR: "seg"
           POST_BODY: "@samples.json"
         run: |
           # TODO: study view is querying with projection=META which does not return anything
           # update if we ever use a query that reutrns data (e.g SUMMARY)
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 1
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 1
       - name: POST Request for /clinical-data-bin-counts endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "http://localhost:8888/api/clinical-data-bin-counts/fetch?dataBinMethod=STATIC"
-          OK_RESPONSE_CODE: 200
-          EMPTY_LIST_RESPONSE: "[]"
           SEARCH_STR: "MUTATION_COUNT"
           POST_BODY: "{\"attributes\":[{\"attributeId\":\"MUTATION_COUNT\",\"disableLogScale\":false},{\"attributeId\":\"FRACTION_GENOME_ALTERED\",\"disableLogScale\":false},{\"attributeId\":\"AGE_AT_SEQ_REPORT\",\"disableLogScale\":false},{\"attributeId\":\"AGE_AT_SEQ_REPORT_DAYS\",\"disableLogScale\":false},{\"attributeId\":\"INT_CONTACT\",\"disableLogScale\":false},{\"attributeId\":\"INT_DOD\",\"disableLogScale\":false},{\"attributeId\":\"SEQ_YEAR\",\"disableLogScale\":false}],\"studyViewFilter\":{\"studyIds\":[\"genie_public\"],\"patientTreatmentFilters\":{\"filters\":[]},\"sampleTreatmentFilters\":{\"filters\":[]}}}"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: POST Request for /clinical-data-counts endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
@@ -129,7 +119,7 @@ jobs:
           SEARCH_STR: "SAMPLE_COUNT"
           POST_BODY: "{\"attributes\":[{\"attributeId\":\"CANCER_TYPE\"},{\"attributeId\":\"CANCER_TYPE_DETAILED\"},{\"attributeId\":\"SAMPLE_COUNT\"},{\"attributeId\":\"SEX\"},{\"attributeId\":\"ETHNICITY\"},{\"attributeId\":\"SAMPLE_TYPE\"},{\"attributeId\":\"CENTER\"},{\"attributeId\":\"ONCOTREE_CODE\"},{\"attributeId\":\"PRIMARY_RACE\"},{\"attributeId\":\"SAMPLE_TYPE_DETAILED\"},{\"attributeId\":\"SECONDARY_RACE\"},{\"attributeId\":\"SEQ_ASSAY_ID\"},{\"attributeId\":\"TERTIARY_RACE\"}],\"studyViewFilter\":{\"studyIds\":[\"genie_public\"],\"patientTreatmentFilters\":{\"filters\":[]},\"sampleTreatmentFilters\":{\"filters\":[]}}}"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: POST Request for /clinical-data-density-plot endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
@@ -137,7 +127,7 @@ jobs:
           SEARCH_STR: "count"
           POST_BODY: "@sampleIdentifiers.json"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: POST Request for /sample-list-counts endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180 
@@ -145,7 +135,7 @@ jobs:
           SEARCH_STR: "count"
           POST_BODY: "{\"sampleTreatmentFilters\":{\"filters\":[]},\"patientTreatmentFilters\":{\"filters\":[]},\"studyIds\":[\"genie_public\"]}"
         run: |
-          . ./.github/k8s/curl.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
+          . ./.github/k8s/run_endpoint_test.sh ${{ steps.extract_pod_name.outputs.pod_name }} "$MAX_WAIT_TIME_IN_SECONDS" "$URL" "$SEARCH_STR" "$POST_BODY" 0 0
       - name: Delete pod
         if: ${{ always() }}
         run: |
