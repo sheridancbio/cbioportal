@@ -43,17 +43,17 @@ jobs:
           action: deploy
           kubectl-version: 'v1.14.0'
       - name: Extract pod name
-        run: echo "##[set-output name=pod_name;]$(kubectl get pods --selector=run=${{ steps.extract_tags.outputs.image_tag }} | tail -1| cut -f1 -d' ')"
+        run: echo "##[set-output name=pod_name;]$(kubectl get pods --namespace=performance-test --selector=run=${{ steps.extract_tags.outputs.image_tag }} | tail -1| cut -f1 -d' ')"
         id: extract_pod_name
       - name: Install curl
         run: |
-            kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "apt-get update; apt-get -y install curl; apt-get -y install jq;"
+            kubectl exec -it --namespace performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "apt-get update; apt-get -y install curl; apt-get -y install jq;"
       - name: POST Request for /filtered-samples endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "http://localhost:8888/api/filtered-samples/fetch"
         run: |
-          kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"studyIds\": [ \"genie_public\" ]}' | jq --join-output --compact-output '[.[]|{sampleId: .\"sampleId\", studyId: \"genie_public\"}]' > samples.json; jq --join-output --compact-output '{sampleIdentifiers: [.[]]}' samples.json > sampleIdentifiers.json"
+          kubectl exec -it --namespace=performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"studyIds\": [ \"genie_public\" ]}' | jq --join-output --compact-output '[.[]|{sampleId: .\"sampleId\", studyId: \"genie_public\"}]' > samples.json; jq --join-output --compact-output '{sampleIdentifiers: [.[]]}' samples.json > sampleIdentifiers.json"
       - name: POST Request for /mutated-genes endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
@@ -77,7 +77,7 @@ jobs:
           OK_RESPONSE_CODE: 200
           EMPTY_LIST_RESPONSE: "[]"
         run: |
-          kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@sampleIdentifiers.json'" > curl.out
+          kubectl exec -it --namespace=performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@sampleIdentifiers.json'" > curl.out
           RESPONSE_CODE=`tail -1 curl.out`
           RESPONSE_BODY=`head -1 curl.out`
           if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
@@ -103,7 +103,7 @@ jobs:
           OK_RESPONSE_CODE: 200
           EMPTY_LIST_RESPONSE: "[]"
         run: |
-          kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@sampleIdentifiers.json'" > curl.out
+          kubectl exec -it --namespace=performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@sampleIdentifiers.json'" > curl.out
           RESPONSE_CODE=`tail -1 curl.out`
           RESPONSE_BODY=`head -1 curl.out`
           if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
@@ -130,7 +130,7 @@ jobs:
           EMPTY_LIST_RESPONSE: "[]"
           SEARCH_STR: "entrezGeneId"
         run: |
-          kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@sampleIdentifiers.json'" > curl.out
+          kubectl exec -it --namespace=performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@sampleIdentifiers.json'" > curl.out
           RESPONSE_CODE=`tail -1 curl.out`
           RESPONSE_BODY=`head -1 curl.out`
           if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
@@ -156,7 +156,7 @@ jobs:
           EMPTY_LIST_RESPONSE: "[]"
           SEARCH_STR: "seg"
         run: |
-          kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@samples.json'" > curl.out
+          kubectl exec -it --namespace=performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '@samples.json'" > curl.out
           RESPONSE_CODE=`tail -1 curl.out`
           RESPONSE_BODY=`head -1 curl.out`
           if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
@@ -184,7 +184,7 @@ jobs:
           EMPTY_LIST_RESPONSE: "[]"
           SEARCH_STR: "MUTATION_COUNT"
         run: |
-          kubectl exec -it ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"attributes\":[{\"attributeId\":\"MUTATION_COUNT\",\"disableLogScale\":false},{\"attributeId\":\"FRACTION_GENOME_ALTERED\",\"disableLogScale\":false},{\"attributeId\":\"AGE_AT_SEQ_REPORT\",\"disableLogScale\":false},{\"attributeId\":\"AGE_AT_SEQ_REPORT_DAYS\",\"disableLogScale\":false},{\"attributeId\":\"INT_CONTACT\",\"disableLogScale\":false},{\"attributeId\":\"INT_DOD\",\"disableLogScale\":false},{\"attributeId\":\"SEQ_YEAR\",\"disableLogScale\":false}],\"studyViewFilter\":{\"studyIds\":[\"genie_public\"],\"patientTreatmentFilters\":{\"filters\":[]},\"sampleTreatmentFilters\":{\"filters\":[]}}}'" > curl.out
+          kubectl exec -it --namespace=performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "curl --max-time $MAX_WAIT_TIME_IN_SECONDS -s -w '\n\n%{http_code}' -X POST '$URL' -H 'accept: application/json' -H 'Content-Type: application/json' -d '{\"attributes\":[{\"attributeId\":\"MUTATION_COUNT\",\"disableLogScale\":false},{\"attributeId\":\"FRACTION_GENOME_ALTERED\",\"disableLogScale\":false},{\"attributeId\":\"AGE_AT_SEQ_REPORT\",\"disableLogScale\":false},{\"attributeId\":\"AGE_AT_SEQ_REPORT_DAYS\",\"disableLogScale\":false},{\"attributeId\":\"INT_CONTACT\",\"disableLogScale\":false},{\"attributeId\":\"INT_DOD\",\"disableLogScale\":false},{\"attributeId\":\"SEQ_YEAR\",\"disableLogScale\":false}],\"studyViewFilter\":{\"studyIds\":[\"genie_public\"],\"patientTreatmentFilters\":{\"filters\":[]},\"sampleTreatmentFilters\":{\"filters\":[]}}}'" > curl.out
           RESPONSE_CODE=`tail -1 curl.out`
           RESPONSE_BODY=`head -1 curl.out`
           if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
