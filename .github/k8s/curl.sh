@@ -20,11 +20,11 @@ if [ "$RESPONSE_CODE" != "$OK_RESPONSE_CODE" ]; then
     echo "Request failed with response code '$RESPONSE_CODE', expected '$OK_RESPONSE_CODE'"
     exit 1
 else
-    if [ "$EXPECT_EMPTY_LIST_RESPONSE" == "1" ] && [ "$RESPONSE_BODY" != "[]" ]; then
+    if [ "$EXPECT_EMPTY_LIST_RESPONSE" -eq 1 ] && [ "$RESPONSE_BODY" != "[]" ]; then
         echo "Request returned a non-empty response when we expect an empty list."
         exit 1
     fi
-    if [ "$EXPECT_EMPTY_RESPONSE" == "1" ] && [ ! -z "$RESPONSE_BODY" ]; then
+    if [ "$EXPECT_EMPTY_RESPONSE" -eq 1 ] && [ ! -z "$RESPONSE_BODY" ]; then
         echo "Request returned a non-empty response when we expect an empty response."
         exit 1
     fi
