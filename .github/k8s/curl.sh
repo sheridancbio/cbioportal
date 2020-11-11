@@ -30,7 +30,7 @@ else
         exit 0
     fi
     # check if we expect an empty response and did not get it
-    if [ "$EXPECT_EMPTY_RESPONSE" -eq 1 ]
+    if [ "$EXPECT_EMPTY_RESPONSE" -eq 1 ]; then
         if [ ! -z "$RESPONSE_BODY" ]; then
             echo "Request returned a non-empty response when we expect an empty response."
             exit 1
@@ -48,5 +48,6 @@ else
             exit 1
         fi
     fi
+    # else we are OK
     exit 0
 fi
