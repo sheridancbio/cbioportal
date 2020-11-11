@@ -41,7 +41,7 @@ jobs:
             /tmp/cbioportal_performance_test.yaml
           images: 'cbioportalpipelines/cbioportal:${{ steps.extract_tags.outputs.image_tag }}'
           action: deploy
-          kubectl-version: 'v1.15.12'
+          kubectl-version: 'v1.14.0'
       - name: Extract pod name
         run: echo "##[set-output name=pod_name;]$(kubectl get pods --namespace=performance-test --selector=run=${{ steps.extract_tags.outputs.image_tag }} | tail -1| cut -f1 -d' ')"
         id: extract_pod_name
