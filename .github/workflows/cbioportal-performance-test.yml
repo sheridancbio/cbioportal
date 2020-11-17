@@ -47,7 +47,7 @@ jobs:
         id: extract_pod_name
       - name: Install curl
         run: |
-            kubectl exec -it --namespace performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "apt-get update; apt-get -y install curl; apt-get -y install jq;"
+            kubectl exec -it --namespace performance-test ${{ steps.extract_pod_name.outputs.pod_name }} -- bash -c "alias sleep_a='sleep 0.3'; sleep_a; apt-get update; sleep_a; apt-get -y install curl; sleep_a apt-get -y install jq"
       - name: POST Request for /filtered-samples endpoint
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
