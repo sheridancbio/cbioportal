@@ -26,12 +26,12 @@
       <artifactId>spring-security-saml2-core</artifactId>
       <version>${spring.security.saml.version}</version>
       <scope>runtime</scope>
-      <exclusions>
+      <!-- exclusions>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
           <artifactId>bcprov-jdk15</artifactId>
         </exclusion>
-      </exclusions>
+      </exclusions -->
     </dependency>
     <!-- jstl -->
     <dependency>
