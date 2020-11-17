@@ -141,7 +141,7 @@ jobs:
         run: |
           kubectl delete -f /tmp/cbioportal_performance_test.yaml
       - name: DELETE request to dockerhub
-        if: ${{ 'disabled step' == 'for testing' && always() }}
+        if: ${{ 'disabled step2' == 'for testing' && always() }}
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "https://hub.docker.com/v2/repositories/cbioportalpipelines/cbioportal/tags/${{ steps.extract_tags.outputs.image_tag }}/"
