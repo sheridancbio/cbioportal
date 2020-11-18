@@ -4,7 +4,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  build_and_publish_docker_image: # TODO rename if this is one big job
+  deploy_portal_and_test_study_view_endpoints:
     if: github.repository == 'cbioportal/cbioportal' && contains(github.event.pull_request.labels.*.name, 'run-performance-tests')
     runs-on: ubuntu-latest
     steps:
@@ -141,8 +141,7 @@ jobs:
         run: |
           kubectl delete -f /tmp/cbioportal_performance_test.yaml
       - name: DELETE request to dockerhub
-        # POINT FOR DISABLING IMAGE DELETION
-        if: ${{ 'disabled2' == 'for testing' && always() }}
+        if: ${{ always() }}
         env:
           MAX_WAIT_TIME_IN_SECONDS: 180
           URL: "https://hub.docker.com/v2/repositories/cbioportalpipelines/cbioportal/tags/${{ steps.extract_tags.outputs.image_tag }}/"
